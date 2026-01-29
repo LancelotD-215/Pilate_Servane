@@ -10,17 +10,45 @@
 <body class="bg-light"> <!-- Class Bootstrap pour un fond clair -->
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-2 shadow"> <!-- Barre de navigation avec class Bootstrap : fond bleu, texte blanc, marge de 4, ombre -->
-        <div class="container-fluid px-3"> <!-- Conteneur Bootstrap pour centrer le contenu avec padding horizontal de 3 -->
-            <a class="navbar-brand fw-bold" href="/">Lisa's Pilates</a> <!-- Lien vers la page d'accueil avec le nom du site, texte en gras -->
+        <div class="container-fluid px-3 d-flex align-items-center"> <!-- Conteneur Bootstrap pour centrer le contenu avec padding horizontal de 3 -->
             
-            <a class="btn btn-success" href="/presence">Check-in</a> <!-- Bouton vert pour noter la présence -->
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse bg-primary" id="navbarNav">
-                <ul class="navbar-nav ms-auto text-end">
+            <!-- GAUCHE : Logo + Menu -->
+            <div class="d-flex align-items-center flex-shrink-0">
+                <!-- MOBILE : Bouton hamburger (masqué sur desktop) -->
+                <button class="navbar-toggler me-2 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <a class="navbar-brand fw-bold me-4" href="/">Lisa's Pilates</a> <!-- Lien vers la page d'accueil avec le nom du site, texte en gras -->
+                
+                <!-- DESKTOP : Menu horizontal (masqué sur mobile) -->
+                <ul class="navbar-nav d-none d-lg-flex">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gestion_clients">Gestion Clients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ajout_seances">Ajout séances</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ajout_client">Nouveau Client</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- MOBILE : Check-in seulement (fixe à droite) -->
+            <a class="btn btn-success d-lg-none ms-auto" href="/presence">Check-in</a>
+            
+            <!-- MOBILE : Menu de navigation collapsible -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                
+                <!-- Barre de recherche mobile (visible uniquement sur petit écran) -->
+                <form class="d-flex d-lg-none mt-3 mb-2 position-relative" action="/recherche_client" method="GET">
+                    <input class="form-control pe-4" type="search" name="q" placeholder="Prénom Nom" aria-label="Rechercher" required id="searchMobile">
+                    <button type="button" class="btn-close btn-sm position-absolute top-50 end-0 translate-middle-y me-2" style="filter: invert(0.5);" onclick="document.getElementById('searchMobile').value=''; document.getElementById('searchMobile').focus();"></button>
+                </form>
+                
+                <!-- Navigation mobile seulement (masquée sur desktop) -->
+                <ul class="navbar-nav text-start d-lg-none">
                     <li class="nav-item">
                         <a class="nav-link" href="/gestion_clients">Gestion Clients</a>
                     </li>
@@ -34,10 +62,16 @@
                     </li>
 
                 </ul>
-                <form class="d-flex mx-auto" action="{{ url_for('recherche_client') }}" method="GET">
-                    <input class="form-control me-2" type="search" name="q" placeholder="Prénom Nom" aria-label="Rechercher" required>
-                    <button class="btn btn-outline-light" type="submit">🔍</button>
+            </div>
+            
+            <!--DROITE : Check-in et recherche-->
+            <div class="d-none d-lg-flex align-items-center ms-auto">
+                <form class="d-flex me-3 position-relative" action="/recherche_client" method="GET">
+                    <input class="form-control pe-4" type="search" name="q" placeholder="Prénom Nom" aria-label="Rechercher" required id="searchDesktop">
+                    <button type="button" class="btn-close btn-sm position-absolute top-50 end-0 translate-middle-y me-2" style="filter: invert(0.5);" onclick="document.getElementById('searchDesktop').value=''; document.getElementById('searchDesktop').focus();"></button>
                 </form>
+                
+                <a class="btn btn-success" href="/presence">Check-in</a>
             </div>
             
         </div>

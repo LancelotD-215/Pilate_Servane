@@ -6,18 +6,18 @@
     <div class="card shadow-sm mb-4 border-primary">
         <div class="card-body">
             <div class="row align-items-center">
-                <div class="col-md-8">
+                <div class="col-md-7">
                     <h1 class="display-5 fw-bold text-primary">{{ client['prenom'] }} {{ client['nom'] }}</h1>
-                    <p class="text-muted mb-1">📅 Inscrit(e) le : {{ client['date_inscription'] }}</p>
-                    <p class="text-muted mb-1">📧 Email : {{ client['email'] or 'Non renseigné' }}</p>
+                    <p class="text-muted mb-1">📆 Inscrit(e) le : {{ client['date_inscription'] }}</p>
+                    <p class="text-muted mb-1">✉️ Email : {{ client['email'] or 'Non renseigné' }}</p>
                     <p class="text-muted mb-0">📞 Tél : {{ client['telephone'] or 'Non renseigné' }}</p>
                 </div>
-                <div class="col-md-4 text-center border-start">
+                <div class="col-md-5 text-center border-start">
                     <h6 class="text-uppercase text-muted ls-1">Solde Actuel</h6>
                     <div class="display-3 fw-bold {{ 'text-success' if client['seances_restantes'] > 0 else 'text-danger' }}">
                         {{ client['seances_restantes'] }}
                     </div>
-                    <span class="badge bg-light text-dark border">Total pratiqué : {{ client['total_seances_faites'] }}</span>
+                    <span class="badge bg-light text-dark border">Total utilisé : {{ client['total_seances_faites'] }}</span>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
         <div class="col-md-6 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">🔄 Ses Créneaux Habituels</h5>
+                    <h5 class="mb-0">Séances Habituelles</h5>
                 </div>
                 <div class="card-body">
                     {% if habitudes %}
@@ -53,7 +53,7 @@
         <div class="col-md-6 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">📜 Historique Récent</h5>
+                    <h5 class="mb-0">Historique D'activité</h5>
                 </div>
                 <ul class="list-group list-group-flush">
                     {% for event in historique %}
@@ -81,7 +81,7 @@
     </div>
     
     <div class="text-center mt-3">
-        <a href="{{ url_for('gestion_clients') }}" class="btn btn-outline-secondary">← Retour à la liste</a>
+        <a href="/" class="btn btn-outline-secondary">← Retour à l'accueil</a>
     </div>
 
 </div>
