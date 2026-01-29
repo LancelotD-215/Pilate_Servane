@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <div class="card shadow-sm mb-4 border-primary">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold text-primary">{{ client['prenom'] }} {{ client['nom'] }}</h1>
+                    <p class="text-muted mb-1">📅 Inscrit(e) le : {{ client['date_inscription'] }}</p>
+                    <p class="text-muted mb-1">📧 Email : {{ client['email'] or 'Non renseigné' }}</p>
+                    <p class="text-muted mb-0">📞 Tél : {{ client['telephone'] or 'Non renseigné' }}</p>
+                </div>
+                <div class="col-md-4 text-center border-start">
+                    <h6 class="text-uppercase text-muted ls-1">Solde Actuel</h6>
+                    <div class="display-3 fw-bold {{ 'text-success' if client['seances_restantes'] > 0 else 'text-danger' }}">
+                        {{ client['seances_restantes'] }}
+                    </div>
+                    <span class="badge bg-light text-dark border">Total pratiqué : {{ client['total_seances_faites'] }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🔄 Ses Créneaux Habituels</h5>
+                </div>
+                <div class="card-body">
+                    {% if habitudes %}
+                        <ul class="list-group list-group-flush">
+                            {% for hab in habitudes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>{{ jours[hab['jour_semaine']] }}</strong>
+                                <span>{{ hab['heure_debut'] }}</span>
+                                <span class="badge bg-secondary">{{ hab['type_seance'] }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center py-3">Aucune habitude définie.</p>
+                        <div class="text-center">
+                            <small>Vous pourrez ajouter une habitude ici prochainement.</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">📜 Historique Récent</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for event in historique %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ event['date_heure'] }}</small>
+                        
+                        {% if event['action'] == 'CHECK-IN' %}
+                            <span class="text-dark">Séance effectuée</span>
+                            <span class="badge bg-light text-dark border">-1</span>
+                        {% elif event['action'] == 'ADD_SEANCES' %}
+                            <span class="text-success fw-bold">Achat / Ajout</span>
+                            <span class="badge bg-success">+{{ event['nombre'] }}</span>
+                        {% elif event['action'] == 'CREATION_COMPTE' %}
+                            <span class="text-primary">Création compte</span>
+                        {% else %}
+                            <span>{{ event['action'] }}</span>
+                        {% endif %}
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-center text-muted">Aucune activité récente.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-3">
+        <a href="{{ url_for('gestion_clients') }}" class="btn btn-outline-secondary">← Retour à la liste</a>
+    </div>
+
+</div>
+{% endblock %}

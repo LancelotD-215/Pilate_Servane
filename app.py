@@ -296,6 +296,87 @@ def ajout_seances_rapide():
 
 
 
+@app.route('/recherche_client', methods=['GET'])
+def recherche_client():
+    """
+    Fonction exécutée lors de l'accès à la page '/recherche_client'.
+    Args:
+        None
+    Returns:
+        str: rendu HTML de la page de résultats de recherche de client.
+    """
+    # récupération du terme de recherche depuis les paramètres GET
+    query = request.args.get('q', '').strip().title()
+
+    # découpage en prénom et nom
+    parts = query.split(' ')
+
+    # suppose que le format est "Prénom Nom"
+    prenom_recherche = parts[0].title()
+    nom_recherche = parts[1].title()
+
+    # connexion à la base de données
+    connection = get_db_connection()
+
+    # recherche des clients correspondant au terme de recherche
+    client = connection.execute('SELECT id FROM clients WHERE prenom = ? AND nom = ?', (prenom_recherche, nom_recherche)).fetchone()
+
+    # fermeture de la connexion à la base de données
+    connection.close()
+
+    # envoi des résultats à la page HTML recherche_client.html
+    return redirect(url_for('fiche_client', client_id=client['id']))
+
+
+
+@app.route('/client/<int:client_id>')
+def fiche_client(client_id):
+    """
+    Fonction exécutée lors de l'accès à la page '/client/<client_id>'.
+    Args:
+        client_id (int): ID du client à afficher.
+    Returns:
+        str: rendu HTML de la fiche du client.
+    """
+    # connexion à la base de données
+    connection = get_db_connection()
+
+    # récupération des informations du client
+    client = connection.execute('SELECT * FROM clients WHERE id = ?', (client_id,)).fetchone()
+
+    # récupération des habitudes du client
+    habitudes = connection.execute('''
+        SELECT s.jour_semaine, s.heure_debut, s.type_seance 
+        FROM habitudes h
+        JOIN semaine_type s ON h.creneau_id = s.id
+        WHERE h.client_id = ?
+    ''', (client_id,)).fetchall()
+
+    # récupération de l'historique des séances du client (10 dernières actions)
+    historique = connection.execute('''
+        SELECT date_heure, action, nombre 
+        FROM historique_seances 
+        WHERE client_id = ? 
+        ORDER BY date_heure DESC 
+        LIMIT 10
+    ''', (client_id,)).fetchall()
+
+    # fermeture de la connexion à la base de données
+    connection.close()
+
+    # pour affichage des jours
+    jours_semaine = {0: 'Lundi', 1: 'Mardi', 2: 'Mercredi', 3: 'Jeudi', 4: 'Vendredi', 5: 'Samedi', 6: 'Dimanche'}
+
+    # envoi des données à la page HTML fiche_client.html
+    return render_template('fiche_client.html', 
+                           client=client, 
+                           habitudes=habitudes, 
+                           historique=historique,
+                           jours=jours_semaine)
+
+
+
+
 # lancement de l'application Flask
 if __name__ == '__main__':
     app.run(debug=True)

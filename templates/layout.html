@@ -34,6 +34,10 @@
                     </li>
 
                 </ul>
+                <form class="d-flex mx-auto" action="{{ url_for('recherche_client') }}" method="GET">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Prénom Nom" aria-label="Rechercher" required>
+                    <button class="btn btn-outline-light" type="submit">🔍</button>
+                </form>
             </div>
             
         </div>

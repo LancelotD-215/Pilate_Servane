@@ -46,7 +46,7 @@ def generer_email(prenom, nom):
 
 # fonction principale de génération de données
 def main():
-    print(f"🚀 Démarrage de la simulation corrigée sur {DB_NAME}...")
+    print(f"🚀 Démarrage de la simulation sur {DB_NAME}...")
     conn = get_db_connection()
     
     # 1. INIT DU SCHÉMA
@@ -54,7 +54,7 @@ def main():
     with open('schema.sql') as f:
         conn.executescript(f.read())
     
-    # 2. GÉNÉRATION DU PLANNING TYPE
+    # 2. GÉNÉRATION DU PLANNING TYPE (Pour que la page Planning ne soit pas vide)
     print("📅 Création de la semaine type...")
     planning_reel = [
         (0, '18:00', 60, 'Collectif'), 
@@ -77,7 +77,7 @@ def main():
         telephone = generer_telephone()
         date_inscription = generer_date_random(DATE_DEBUT, DATE_FIN)
         
-        # On insère le client
+        # NOTE : On ne spécifie PAS 'abonnement', donc il sera à 0 par défaut (grâce au schéma)
         cur = conn.execute('''
             INSERT INTO clients (prenom, nom, seances_restantes, date_inscription, email, telephone, total_seances_faites) 
             VALUES (?, ?, ?, ?, ?, ?, 0)
@@ -85,10 +85,10 @@ def main():
         
         client_id = cur.lastrowid
         
-        # Initialisation des compteurs pour ce client
+        # Initialisation des compteurs
         current_date = date_inscription
         solde = 10 
-        total_seances = 0 # <--- NOUVEAU COMPTEUR
+        total_seances = 0 
         
         # Historique Création
         conn.execute('''
@@ -105,7 +105,7 @@ def main():
             
             # Action : CHECK-IN
             solde -= 1
-            total_seances += 1 # <--- ON INCRÉMENTE ICI
+            total_seances += 1
             
             conn.execute('''
                 INSERT INTO historique_seances (client_id, action, nombre, date_heure) 
@@ -121,8 +121,7 @@ def main():
                     VALUES (?, ?, ?, ?)
                 ''', (client_id, 'ADD_SEANCES', recharge, current_date.strftime('%Y-%m-%d %H:%M:%S')))
 
-        # --- MISE À JOUR FINALE AVEC LE TOTAL ---
-        # On sauvegarde le solde ET le total des séances faites
+        # Mise à jour finale
         conn.execute('''
             UPDATE clients 
             SET seances_restantes = ?, total_seances_faites = ? 
@@ -130,12 +129,10 @@ def main():
         ''', (solde, total_seances, client_id))
         
         clients_generes += 1
-        if clients_generes % 20 == 0:
-            print(f"   ... {clients_generes} clients traités")
 
     conn.commit()
     conn.close()
-    print("\n✅ TERMINÉ ! Les compteurs de séances sont maintenant corrects.")
+    print("\n✅ TERMINÉ ! Base de test prête.")
 
 if __name__ == '__main__':
     main()
