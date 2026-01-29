@@ -19,12 +19,12 @@ CREATE TABLE clients(
     id INTEGER PRIMARY KEY AUTOINCREMENT,  -- Identifiant unique pour chaque client, INTEGER pour un entier, AUTOINCREMENT pour qu'il s'incrémente automatiquement
     prenom TEXT NOT NULL, --TEXT pour chaine de caractères, NOT NULL pour que ce champ soit obligatoire
     nom TEXT NOT NULL,
-    seances_restantes INTEGER DEFAULT 0,
     date_inscription DATE DEFAULT CURRENT_DATE,
     telephone TEXT,
     email TEXT,
-    abonnement INTEGER DEFAULT 0,
-    total_seances_faites INTEGER DEFAULT 0
+    seances_restantes INTEGER DEFAULT 0,
+    total_seances_faites INTEGER DEFAULT 0,
+    abonnement INTEGER DEFAULT 0
 );
 
 -- Création de la table des créneaux types de la semaine
