@@ -10,6 +10,7 @@ print("Début du programme.")
 
 # import des modules
 import sqlite3 # pour gérer la bdd SQLite
+from datetime import datetime, timedelta
 
 # connexion à la base de données (ou création si elle n'existe pas)
 connection = sqlite3.connect('database_clients.db') # connexion à la bdd
@@ -20,22 +21,30 @@ with open('schema.sql') as f:
     connection.executescript(f.read()) # exécution du script SQL
 print("Schéma de la base de données créé avec succès.")
 
-# ajout de données test 
+# création d'un curseur
 curseur = connection.cursor() # création d'un curseur (stylo pour écrire) pour exécuter des commandes SQL
 
-# création d'utilisateurs test
-curseur.execute("INSERT INTO clients (prenom, nom, seances_restantes) VALUES (?, ?, ?)", ('Lancelot', 'Du Lac', 5)) # ? remplacés par tuple (pour contrer les injections SQL)
-curseur.execute("INSERT INTO clients (prenom, nom, seances_restantes) VALUES (?, ?, ?)", ('Guenièvre', 'La Belle', 3)) 
-# utilisation d'une séance test
-curseur.execute("INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)", (1, 'CHECK-IN', 1))
-curseur.execute("UPDATE clients SET seances_restantes = seances_restantes - 1 WHERE id = ?", (1,))
+# du planning type
+planning_type = [
+    # Exemple : Lundi à 18h00, cours collectif
+    (0, '18:00', 60, 'Collectif'),
+    
+    # Exemple : Jeudi à 18h30, cours collectif
+    (3, '18:30', 60, 'Collectif'),
+    
+    # Ajoute les autres lignes ici...
+]
 
-print("Utilisateurs test insérés avec succès.")
+for seance in planning_type:
+    curseur.execute("""
+        INSERT INTO semaine_type (jour_semaine, heure_debut, duree, type_seance) 
+        VALUES (?, ?, ?, ?)
+    """, seance)
 
-# validation des changements
+print(f"{len(planning_type)} créneaux types ajoutés au planning.")
+
+# validation des changements et fermeture
 connection.commit()
-
-# fermeture de la connexion
 connection.close()
 
 print("Connexion à la base de données fermée.")
