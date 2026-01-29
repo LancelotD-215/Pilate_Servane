@@ -278,12 +278,21 @@ def ajout_seances_rapide():
         # ajout dans historique seances
         connection.execute('INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)', (client_id, "ADD_SEANCES", seances_ajoutees))
 
+        # récupération de l'origine de la requête
+        origine = request.form.get('origine')
+
         # commit des changements
         connection.commit() 
         connection.close()
 
         # renvoie l'utilisateur vers la page de gestion des clients
-        return redirect(url_for('gestion_clients'))
+        # selon l'origine du formulaire
+        if origine == 'index':
+            # Si le formulaire contenait <input name="origine" value="index">
+            return redirect(url_for('index'))
+        else:
+            # Sinon (comportement par défaut pour la page gestion_clients)
+            return redirect(url_for('gestion_clients'))
 
 
 

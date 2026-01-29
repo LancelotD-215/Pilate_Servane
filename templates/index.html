@@ -27,9 +27,12 @@
                         <div class="fw-bold">
                             {{ client['seances_restantes'] }} séances
                             
-                            <a href="{{ url_for('gestion_clients') }}" class="btn btn-sm btn-outline-danger ms-3">
+                            <button type="button" class="btn btn-sm btn-outline-danger ms-3 btn-regulariser"
+                                    data-id="{{ client['id'] }}"
+                                    data-prenom="{{ client['prenom'] }}"
+                                    data-nom="{{ client['nom'] }}">
                                 Régulariser
-                            </a>
+                            </button>
                         </div>
                     </div>
                     {% endfor %}
@@ -115,5 +118,62 @@
     </div>
     {% endif %}
 </div>
+
+
+<div class="modal fade" id="modalRegulariser" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-danger"> <form action="{{ url_for('ajout_seances_rapide') }}" method="POST">
+          
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">🚨 Régulariser un impayé</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body">
+          <p class="text-center">Régularisation pour :</p>
+          <p id="modalNomClientReg" class="fw-bold text-center fs-4 text-danger"></p>
+          
+          <input type="hidden" name="client_id" id="inputIdClientReg">
+
+          <input type="hidden" name="origine" value="index">
+
+          <div class="mb-3">
+            <label class="form-label">Nombre de séances achetées</label>
+            <input type="number" class="form-control form-control-lg text-center border-danger text-danger fw-bold" 
+                   name="seances_ajoutees" value="10" min="1" required>
+            <div class="form-text">Cela remettra le solde en positif.</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-danger">Valider la régularisation</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Quand on clique sur un bouton "Régulariser"
+        $(document).on('click', '.btn-regulariser', function () {
+            
+            // 1. On récupère les infos du bouton
+            var id = $(this).data('id');
+            var prenom = $(this).data('prenom');
+            var nom = $(this).data('nom');
+
+            // 2. On remplit la modale rouge
+            $('#inputIdClientReg').val(id);
+            $('#modalNomClientReg').text(prenom + ' ' + nom);
+
+            // 3. On affiche la modale
+            var myModal = new bootstrap.Modal(document.getElementById('modalRegulariser'));
+            myModal.show();
+        });
+    });
+</script>
 
 {% endblock %} <!-- Fin du bloc de contenu spécifique à cette page -->
