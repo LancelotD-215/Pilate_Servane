@@ -24,6 +24,9 @@
                 <!-- DESKTOP : Menu horizontal (masqué sur mobile) -->
                 <ul class="navbar-nav d-none d-lg-flex">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('planning') }}">Planning</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/gestion_clients">Gestion Clients</a>
                     </li>
                     <li class="nav-item">
@@ -31,9 +34,6 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/ajout_client">Nouveau Client</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('planning') }}">Planning</a>
                     </li>
                 </ul>
             </div>
@@ -53,6 +53,9 @@
                 <!-- Navigation mobile seulement (masquée sur desktop) -->
                 <ul class="navbar-nav text-start d-lg-none">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('planning') }}">Planning</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/gestion_clients">Gestion Clients</a>
                     </li>
 
@@ -62,9 +65,6 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href="/ajout_client">Nouveau Client</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('planning') }}">Planning</a>
                     </li>
                 </ul>
             </div>

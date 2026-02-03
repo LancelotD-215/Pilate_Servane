@@ -413,28 +413,52 @@ def planning():
         ''').fetchall()
     connection.close()
 
-    # construction du planning hebdomadaire
+    # définition de la plage horaire du planning (de 8h à 20h)
+    HEURE_DEBUT = 8
+    HEURE_FIN = 20
+    DUREE_TOTAL_MINUTES = (HEURE_FIN - HEURE_DEBUT) * 60
+
+    # génération de la liste des heures pour la colonne de gauche (8.00, 9.00, ..., 20.00)
+    heure_affichage = [f"{h:02d}:00" for h in range(HEURE_DEBUT, HEURE_FIN + 1)]
+
+    # contruction du planning
     semaine_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
-    semaine_data = []
+    planning = []
 
-    for i in range(7):
-        jour_date = start_of_week + timedelta(days=i)
+    for jour in range(7):
+        jour_date = start_of_week + timedelta(days=jour)
 
-        # filtrage des créneaux pour le jour i
-        creneaux_jour = [c for c in planning_squelett if c['jour_semaine'] == i]
+        # filtre des créneaux pour le jour courant
+        creneaux_jour = [c for c in planning_squelett if c['jour_semaine'] == jour]
+        creneaux_jour_processed = []
 
-        semaine_data.append({
-            'nom': semaine_fr[i],
-            'date': jour_date.strftime('%Y-%m-%d'),
-            'creneaux': creneaux_jour,
-            'is_today': jour_date.date() == today.date()
+        for creneau in creneaux_jour:
+            start_time = datetime.strptime(creneau['heure_debut'], '%H:%M')
+            h, m = map(int, start_time.strftime.split(':'))
+
+            min_from_begin = (h - HEURE_DEBUT) * 60 + m
+
+            top_percent = (min_from_begin / DUREE_TOTAL_MINUTES) * 100
+
+            height_percent = (creneau['duree'] / DUREE_TOTAL_MINUTES) * 100
+
+            creneaux_jour_processed.append({
+                'data': creneau, # Les infos brutes (heure, type...)
+                'style': f"top: {top_percent}%; height: {height_percent}%;"
+            })
+        
+        planning.append({
+            'nom': semaine_fr[jour],
+            'date_courte': jour_date.strftime('%d/%m'), # Ex: 04/02
+            'is_today': jour_date.date() == today.date(), # Pour le surlignage
+            'creneaux': creneaux_jour_processed # La liste des blocs positionnés
         })
-
-    # envoi des données à la page HTML planning.html
+        
     return render_template('planning.html',
-                            semaine=semaine_data,
-                            period_title=period_title,
-                            offset=offset)
+                           semaine=planning,
+                           period_title=period_title,
+                           offset=offset,
+                           heures=heure_affichage)
 
 
 # lancement de l'application Flask
