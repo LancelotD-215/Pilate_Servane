@@ -400,12 +400,17 @@ def planning():
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
     end_of_week = start_of_week + timedelta(days=6)
-    start_date_str = start_of_week.strftime('%Y-%m-%d')
-    end_date_str = end_of_week.strftime('%Y-%m-%d')
+
+    # formatage pour affichage
+    period_title = f"Semaine du {start_of_week.strftime('%d/%m/%Y')} au {end_of_week.strftime('%d/%m/%Y')}"
 
     # récupération du squellette du planning
     connection = get_db_connection()
-    planning_squelett = connection.execute('SELECT * FROM semaine_type').fetchall()
+    planning_squelett = connection.execute('''
+        SELECT * FROM semaine_type
+        WHERE actif = 1 
+        ORDER BY heure_debut
+        ''').fetchall()
     connection.close()
 
     # construction du planning hebdomadaire
@@ -415,21 +420,20 @@ def planning():
     for i in range(7):
         jour_date = start_of_week + timedelta(days=i)
 
-        creneaux_jour = []
-        for creneau in planning_squelett:
-            if creneau['jour_semaine'] == i:
-                creneaux_jour.append(creneau)
+        # filtrage des créneaux pour le jour i
+        creneaux_jour = [c for c in planning_squelett if c['jour_semaine'] == i]
+
         semaine_data.append({
-            'jour_nom': semaine_fr[i],
+            'nom': semaine_fr[i],
             'date': jour_date.strftime('%Y-%m-%d'),
-            'creneaux': creneaux_jour
+            'creneaux': creneaux_jour,
+            'is_today': jour_date.date() == today.date()
         })
-        
+
     # envoi des données à la page HTML planning.html
     return render_template('planning.html',
                             semaine=semaine_data,
-                            start_date=start_date_str,
-                            end_date=end_date_str,
+                            period_title=period_title,
                             offset=offset)
 
 
