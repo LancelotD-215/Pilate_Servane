@@ -178,6 +178,11 @@ def ajout_client():
         nom = request.form['nom'].strip().title() 
         seances_initiales = int(request.form['seances_initiales'])
 
+        email = request.form.get('email') # .get pour champ optionnel
+        telephone = request.form.get('telephone')
+
+        abonnement = 1 if request.form.get('abonnement') else 0
+
         # vérification si le client existe déjà
         existing_client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
 
@@ -187,7 +192,7 @@ def ajout_client():
         
         else:
             # curseur pour récupérer l'ID du nouveau client
-            curseur = connection.execute('INSERT INTO clients (prenom, nom, seances_restantes) VALUES (?, ?, ?)',(prenom, nom, seances_initiales))
+            curseur = connection.execute('INSERT INTO clients (prenom, nom, seances_restantes, email, telephone, abonnement) VALUES (?, ?, ?, ?, ?, ?)',(prenom, nom, seances_initiales, email, telephone, abonnement))
             
             # récupération de l'ID du nouveau client
             nouveau_client_id = curseur.lastrowid

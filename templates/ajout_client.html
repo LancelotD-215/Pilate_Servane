@@ -1,43 +1,53 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-warning text-black">
-                <h4 class="mb-0">Ajouter un nouveau client
-                </h4>
-            </div>
-            <div class="card-body">
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-8">
+            <h2 class="mb-4 text-center">Nouveau Client</h2>
+            
+            <form method="post" class="p-4 border rounded shadow-sm bg-white">
                 
-                <form method="post">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Prénom</label>
-                        <input type="text" class="form-control" name="prenom" placeholder="Ex: Arthur" required>
+                <h5 class="text-primary mb-3">Identité</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="prenom" class="form-label fw-bold">Prénom *</label>
+                        <input type="text" class="form-control" id="prenom" name="prenom" required placeholder="Ex: Lancelot">
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Nom</label>
-                        <input type="text" class="form-control" name="nom" placeholder="Ex: Pendragon" required>
+                    <div class="col-md-6">
+                        <label for="nom" class="form-label fw-bold">Nom *</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required placeholder="Ex: Du Lac">
                     </div>
+                </div>
 
-                    <hr> <div class="mb-3">
-                        <label class="form-label">Nombre de séances initiales</label>
-                        <input type="number" class="form-control" name="seances_initiales" value="1" min="0" required>
+                <hr class="my-4 text-muted">
+
+                <h5 class="text-primary mb-3">Contact (Optionnel)</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="telephone" class="form-label">Téléphone</label>
+                        <input type="tel" class="form-control" id="telephone" name="telephone" placeholder="Ex: 06 12 34 56 78">
                     </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-warning btn-lg">Créer le client</button>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Ex: lancelot@danesse.com">
                     </div>
-                </form>
+                </div>
 
-            </div>
-        </div>
-        
-        <div class="text-center mt-3">
-            <a href="/" class="text-muted">Annuler</a>
+                <hr class="my-4 text-muted">
+
+                <h5 class="text-primary mb-3">Séances</h5>
+                <div class="mb-4">
+                    <label for="seances_restantes" class="form-label">Solde de départ</label>
+                    <input type="number" class="form-control w-50" id="seances_restantes" name="seances_restantes" value="0">
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('gestion_clients') }}" class="btn btn-outline-secondary me-md-2">Annuler</a>
+                    <button type="submit" class="btn btn-success px-4">Enregistrer le client</button>
+                </div>
+
+            </form>
         </div>
     </div>
 </div>

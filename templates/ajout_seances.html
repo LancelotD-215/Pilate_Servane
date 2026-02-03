@@ -1,41 +1,41 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-info text-dark">
-                <h4 class="mb-0">Recharger un compte en séances</h4>
-            </div>
-            <div class="card-body">
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-8"> <h2 class="mb-4 text-center">Recharger un compte</h2>
+            
+            <form method="post" class="p-4 border rounded shadow-sm bg-white">
                 
-                <form method="post">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Prénom </label>
-                        <input type="text" class="form-control" name="prenom" placeholder="Ex: Genièvre" required>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label class="form-label fw-bold">Prénom</label>
+                        <input type="text" class="form-control" name="prenom" placeholder="Ex: Guenièvre" required>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Nom</label>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Nom</label>
                         <input type="text" class="form-control" name="nom" placeholder="Ex: La Belle" required>
                     </div>
+                </div>
 
-                    <hr> <div class="mb-3">
-                        <label class="form-label">Nombre de séances à ajouter</label>
-                        <input type="number" class="form-control" name="seances_ajoutees" value="1" min="1" required>
+                <hr class="my-4 text-muted">
+
+                <div class="mb-4">
+                    <label class="form-label">Nombre de séances à ajouter</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="seances_ajoutees" value="8" min="1" required>
+                        <span class="input-group-text">séances</span>
                     </div>
+                    <div class="form-text">Ce montant sera ajouté au solde actuel du client.</div>
+                </div>
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-info btn-lg">Valider l'ajout</button>
-                    </div>
-                </form>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/" class="btn btn-outline-secondary me-md-2">Annuler</a>
+                    <button type="submit" class="btn btn-success px-4">Valider le rechargement</button>
+                </div>
 
-            </div>
-        </div>
-        
-        <div class="text-center mt-3">
-            <a href="/" class="text-muted">Annuler</a>
+            </form>
+
         </div>
     </div>
 </div>
