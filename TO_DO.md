@@ -5,3 +5,4 @@
 
 ## correctifs divers
 - [ ] corriger le nombre de cours du mois dans le widget
+- [ ] corriger les couleurs dans gestion client des séances

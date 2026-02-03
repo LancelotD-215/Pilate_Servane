@@ -434,7 +434,7 @@ def planning():
 
         for creneau in creneaux_jour:
             start_time = datetime.strptime(creneau['heure_debut'], '%H:%M')
-            h, m = map(int, start_time.strftime.split(':'))
+            h, m = map(int, start_time.strftime('%H:%M').split(':'))
 
             min_from_begin = (h - HEURE_DEBUT) * 60 + m
 
