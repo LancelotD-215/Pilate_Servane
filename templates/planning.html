@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container-fluid py-3">
+
+    <div class="row align-items-center mb-4">
+        <div class="col-3 text-start">
+            <a href="{{ url_for('planning', semaine=offset-1) }}" class="btn btn-outline-primary shadow-sm">
+                &larr; <span class="d-none d-md-inline">Précédent</span>
+            </a>
+        </div>
+        
+        <div class="col-6 text-center">
+            <h4 class="fw-bold m-0 text-primary">{{ period_title }}</h4>
+            {% if offset != 0 %}
+                <a href="{{ url_for('planning') }}" class="badge bg-secondary text-decoration-none mt-1">Revenir à aujourd'hui</a>
+            {% endif %}
+        </div>
+        
+        <div class="col-3 text-end">
+            <a href="{{ url_for('planning', semaine=offset+1) }}" class="btn btn-outline-primary shadow-sm">
+                <span class="d-none d-md-inline">Suivant</span> &rarr;
+            </a>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-lg-7 g-2"> 
+        
+        {% for jour in semaine %}
+        <div class="col"> 
+            
+            <div class="card h-100 shadow-sm {{ 'border-primary border-2 bg-primary bg-opacity-10' if jour.is_today else 'border-light bg-light' }}">
+                
+                <div class="card-header text-center border-0 bg-transparent pt-3">
+                    <div class="text-uppercase small fw-bold text-muted">{{ jour.nom }}</div>
+                    <div class="fs-4 fw-bold {{ 'text-primary' if jour.is_today else 'text-dark' }}">
+                        {{ jour.date.split('-')[2] }}/{{ jour.date.split('-')[1] }}
+                    </div>
+                </div>
+
+                <div class="card-body p-2">
+                    {% if jour.creneaux %}
+                        {% for cours in jour.creneaux %}
+                            <div class="card mb-2 border-0 shadow-sm" style="border-left: 4px solid #0d6efd;">
+                                <div class="card-body p-2 bg-white rounded-end">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold text-dark small">{{ cours['heure_debut'] }}</span>
+                                        {% if cours['type_seance'] == 'Collectif' %}
+                                            <span class="badge bg-primary" style="font-size: 0.6em;">Coll.</span>
+                                        {% elif cours['type_seance'] == 'Solo' %}
+                                            <span class="badge bg-success" style="font-size: 0.6em;">Solo</span>
+                                        {% else %}
+                                            <span class="badge bg-info text-dark" style="font-size: 0.6em;">Duo</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        ⏱ {{ cours['duree'] }} min
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 opacity-25">
+                            <small class="text-muted">-</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}
