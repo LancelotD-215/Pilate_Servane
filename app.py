@@ -9,7 +9,7 @@ date : 2026/01/20
 # imports des modules
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
-from datetime import datetime
+from datetime import datetime, timedelta
 from app_lib import get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients
 
 # création de l'application Flask
@@ -380,6 +380,57 @@ def fiche_client(client_id):
                            jours=jours_semaine)
 
 
+
+@app.route('/planning')
+def planning():
+    """
+    Fonction exécutée lors de l'accès à la page '/planning'.
+    Args:
+        None
+    Returns:
+        str: rendu HTML de la page de planning.
+    """
+    # récupération du paramètre 'semaine' pour décaler l'affichage du planning
+    try:
+        offset = int(request.args.get('semaine', 0))
+    except ValueError:
+        offset = 0
+
+    # calcul des dates de début et fin de la semaine affichée
+    today = datetime.now()
+    start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
+    end_of_week = start_of_week + timedelta(days=6)
+    start_date_str = start_of_week.strftime('%Y-%m-%d')
+    end_date_str = end_of_week.strftime('%Y-%m-%d')
+
+    # récupération du squellette du planning
+    connection = get_db_connection()
+    planning_squelett = connection.execute('SELECT * FROM semaine_type').fetchall()
+    connection.close()
+
+    # construction du planning hebdomadaire
+    semaine_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+    semaine_data = []
+
+    for i in range(7):
+        jour_date = start_of_week + timedelta(days=i)
+
+        creneaux_jour = []
+        for creneau in planning_squelett:
+            if creneau['jour_semaine'] == i:
+                creneaux_jour.append(creneau)
+        semaine_data.append({
+            'jour_nom': semaine_fr[i],
+            'date': jour_date.strftime('%Y-%m-%d'),
+            'creneaux': creneaux_jour
+        })
+        
+    # envoi des données à la page HTML planning.html
+    return render_template('planning.html',
+                            semaine=semaine_data,
+                            start_date=start_date_str,
+                            end_date=end_date_str,
+                            offset=offset)
 
 
 # lancement de l'application Flask
