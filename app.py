@@ -399,7 +399,7 @@ def planning():
     # calcul des dates de début et fin de la semaine affichée
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
-    end_of_week = start_of_week + timedelta(days=6)
+    end_of_week = start_of_week + timedelta(days=4)
 
     # formatage pour affichage
     period_title = f"Semaine du {start_of_week.strftime('%d/%m/%Y')} au {end_of_week.strftime('%d/%m/%Y')}"
@@ -422,10 +422,10 @@ def planning():
     heure_affichage = [f"{h:02d}:00" for h in range(HEURE_DEBUT, HEURE_FIN + 1)]
 
     # contruction du planning
-    semaine_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+    semaine_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
     planning = []
 
-    for jour in range(7):
+    for jour in range(5):
         jour_date = start_of_week + timedelta(days=jour)
 
         # filtre des créneaux pour le jour courant
