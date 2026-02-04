@@ -44,19 +44,56 @@
     }
     /* Le bloc d'un cours */
     .creneau-bloc {
-        position: absolute; /* Positionné par rapport à .col-jour */
-        width: 94%; /* Un petit espace sur les côtés */
+        position: absolute;
+        width: 94%;
         left: 3%;
-        /* 'top' et 'height' sont définis en ligne par Python */
-        background-color: #343a40; /* Couleur sombre (style Google Agenda) */
-        color: #fff;
+        /* Couleur de texte par défaut */
+        color: #fff; 
         border-radius: 4px;
         padding: 4px 6px;
         font-size: 0.75rem;
         overflow: hidden;
-        box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
-        z-index: 10; /* Au-dessus des lignes de grille */
-        border-left: 3px solid #0d6efd; /* Petite touche de couleur */
+        box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        z-index: 10;
+        /* On enlève la bordure gauche bleue par défaut */
+    }
+
+    /* --- COULEURS SPÉCIFIQUES (Inspirées de ton image) --- */
+    
+    /* Jaune (Pilates Intermédiaire) */
+    .bg-intermediaire {
+        background-color: #d4d700; 
+        color: #fff; /* ou #333 si tu veux le texte noir */
+    }
+
+    /* Bleu clair (Pilates Fondamental) */
+    .bg-fondamental {
+        background-color: #8be0e0;
+        color: #fff;
+    }
+
+    /* Violet (Yoga Doux) */
+    .bg-yoga {
+        background-color: #7b68ee; /* MediumSlateBlue */
+        color: #fff;
+    }
+
+    /* Orange/Marron (Mobilité) */
+    .bg-mobilite {
+        background-color: #c76f18;
+        color: #fff;
+    }
+
+    /* Bleu canard/foncé (Pilates Avancé) */
+    .bg-avance {
+        background-color: #208e96;
+        color: #fff;
+    }
+
+    /* Défaut (Gris) */
+    .bg-defaut {
+        background-color: #6c757d;
+        color: #fff;
     }
     /* Style pour le jour actuel */
     .col-jour.is-today {
@@ -105,17 +142,31 @@
                 <div class="heure-repere">{{ heure }}</div>
                 {% endfor %}
             </div>
-
+            
             {% for jour in semaine %}
             <div class="col-jour {{ 'is-today' if jour.is_today else '' }}">
+            
                 {% for creneau in jour.creneaux %}
-                <div class="creneau-bloc" style="{{ creneau.style }}">
-                    <div class="fw-bold">{{ creneau.data['heure_debut'] }}</div>
-                    <div class="text-truncate">{{ creneau.data['type_seance'] }}</div>
-                    <div class="small opacity-75 mt-1">
-                        ⏱ {{ creneau.data['duree'] }} min
-                    </div>
-                </div>
+                    
+                    {% set type = creneau.data['type_seance'] %}
+                    {% if 'Intermédiaire' in type %}
+                        {% set couleur_class = 'bg-intermediaire' %}
+                    {% elif 'Fondamental' in type %}
+                        {% set couleur_class = 'bg-fondamental' %}
+                    {% elif 'Yoga' in type %}
+                        {% set couleur_class = 'bg-yoga' %}
+                    {% elif 'Mobilité' in type %}
+                        {% set couleur_class = 'bg-mobilite' %}
+                    {% elif 'Avancé' in type %}
+                        {% set couleur_class = 'bg-avance' %}
+                    {% else %}
+                        {% set couleur_class = 'bg-defaut' %}
+                    {% endif %}
+
+                    <div class="creneau-bloc {{ couleur_class }}" style="{{ creneau.style }}">
+                        <div class="fw-bold">{{ creneau.data['heure_debut'] }}</div>
+                        <div class="text-truncate" style="font-weight: 500;">{{ creneau.data['type_seance'] }}</div>
+                        </div>
                 {% endfor %}
             </div>
             {% endfor %}

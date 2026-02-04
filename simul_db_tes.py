@@ -57,12 +57,33 @@ def main():
     # 2. GÉNÉRATION DU PLANNING TYPE (Pour que la page Planning ne soit pas vide)
     print("📅 Création de la semaine type...")
     planning_reel = [
-        (0, '18:00', 60, 'Collectif'), 
-        (1, '10:00', 60, 'Solo'),      
-        (1, '18:00', 60, 'Collectif'), 
-        (3, '18:30', 60, 'Collectif'), 
-        (5, '10:00', 60, 'Duo')        
-    ]
+    # --- LUNDI ---
+    (0, '09:00', 45, 'Pilates Intermédiaire'),
+    (0, '09:45', 45, 'Pilates Fondamental'),
+    (0, '10:45', 45, 'Pilates Fondamental'),
+    (0, '12:30', 45, 'Pilates Intermédiaire'),
+    (0, '18:30', 45, 'Pilates Intermédiaire'),
+    (0, '19:15', 45, 'Pilates Fondamental'),
+    (0, '20:00', 45, 'Pilates Intermédiaire'),
+
+    # --- MARDI (Les 2 derniers du mercredi décalés ici) ---
+    (1, '19:15', 45, 'Pilates Intermédiaire'),
+    (1, '20:00', 45, 'Pilates Avancé'),
+
+    # --- MERCREDI ---
+    (2, '09:00', 45, 'Pilates Intermédiaire'),
+    (2, '10:00', 60, 'Yoga Doux'), # Attention durée 1h
+    (2, '12:30', 45, 'Pilates Fondamental'),
+    (2, '18:30', 45, 'Pilates Fondamental'),
+    # Les créneaux de 19:15 et 20:00 ont été déplacés au Mardi comme demandé
+
+    # --- JEUDI ---
+    (3, '09:30', 45, 'Pilates Fondamental'),
+    (3, '10:30', 60, 'Mobilité et respiration'), # Durée 1h
+    (3, '18:30', 45, 'Pilates Intermédiaire'),
+    (3, '19:15', 45, 'Pilates Fondamental'),
+    (3, '20:00', 45, 'Pilates Intermédiaire')
+]
     for creneau in planning_reel:
         conn.execute("INSERT INTO semaine_type (jour_semaine, heure_debut, duree, type_seance) VALUES (?, ?, ?, ?)", creneau)
 
