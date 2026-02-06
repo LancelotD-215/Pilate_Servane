@@ -8,6 +8,10 @@
 - [ ] créer le pop up de quand on clique sur une séance pour afficher plus d'infos et pouvoir valider les présences
 - [ ] Integrer la gestion client dans l'agenda
 - [ ] Validation séances dans l'agenda
+- [ ] Ajouter des séances dans l'agenda de manière ponctuelle
+- [ ] Ajouter des séances dans l'agenda de manière definitive
+- [ ] Supprimer des séances dans l'agenda de manière ponctuelle
+- [ ] Supprimer des séances dans l'agenda de manière definitive
 
 ## Implémentation des widgets
 - [ ] Ajouter widget bouton pour choix des widgets à afficher
@@ -16,7 +20,7 @@
 
 ## correctifs divers
 - [X] corriger le nombre de cours du mois dans le widget
-- [ ] corriger les couleurs dans gestion client des séances
+- [X] corriger les couleurs dans gestion client des séances
 
 ## Implémentation autre
 - [X] supprimer client habituel 4 semaines

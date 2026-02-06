@@ -15,7 +15,6 @@
                         <tr>
                             <th>Prénom</th>
                             <th>Nom</th>
-                            <th>Date d'inscription</th>
                             <th class="text-center">Séances restantes</th> <!-- Centre le texte de cette colonne -->
                             <th>Détails</th>
                             <th>Ajout séances</th>
@@ -26,7 +25,6 @@
                         <tr> <!-- Ligne du tableau pour chaque client, table row -->
                             <td>{{ client['prenom'] }}</td> <!-- Cellule du tableau pour le prénom, table data -->
                             <td>{{ client['nom'] }}</td> <!-- Double accolade pour insérer la valeur dynamique du nom -->
-                            <td>{{ client['date_inscription'] }}</td>
                             <td class="text-center" data-order="{{ client['seances_restantes'] }}"> <!-- Centre le texte de cette cellule -->
                                 <span class="badge rounded-pill 
                                     {% if client['seances_restantes'] > 0 %}
@@ -40,16 +38,17 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <a href="{{ url_for('fiche_client', client_id=client['id']) }}" class="btn btn-sm btn-outline-primary">
-                                    👤 Info
-                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill btn-voir-fiche"
+                                        data-client-id="{{ client['id'] }}">
+                                    ℹ️
+                                </button>
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-success btn-ajout-rapide"
+                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill btn-ajout-rapide"
                                 data-id="{{ client['id'] }}"
                                 data-prenom="{{ client['prenom'] }}"
                                 data-nom="{{ client['nom'] }}">
-                               ➕ Ajouter
+                                    ➕
                                  </button>
                            </td>
                         </tr>
@@ -113,6 +112,12 @@
             // 3. On affiche la modale Bootstrap
             var myModal = new bootstrap.Modal(document.getElementById('modalAjoutSeance'));
             myModal.show();
+        });
+        
+        // Gestion du clic sur le bouton Info
+        $(document).on('click', '.btn-voir-fiche', function() {
+            var clientId = $(this).data('client-id');
+            window.location.href = '/client/' + clientId;
         });
     });
 </script>

@@ -180,7 +180,7 @@ def ajout_client():
         # récupération des données du formulaire
         prenom = request.form['prenom'].strip().title()
         nom = request.form['nom'].strip().title() 
-        seances_initiales = int(request.form['seances_initiales'])
+        seances_initiales = int(request.form['seances_restantes'])
 
         email = request.form.get('email') # .get pour champ optionnel
         telephone = request.form.get('telephone')
