@@ -5,8 +5,8 @@
 
 ## Implémentation de l'agenda
 - [X] Créer la page calendrier
-- [ ] créer le pop up de quand on clique sur une séance pour afficher plus d'infos et pouvoir valider les présences
-- [ ] Integrer la gestion client dans l'agenda
+- [X] créer le pop up de quand on clique sur une séance pour afficher plus d'infos et pouvoir valider les présences
+- [X] Integrer la gestion client dans l'agenda
 - [ ] Validation séances dans l'agenda
 - [ ] Ajouter des séances dans l'agenda de manière ponctuelle
 - [ ] Ajouter des séances dans l'agenda de manière definitive
@@ -21,6 +21,8 @@
 ## correctifs divers
 - [X] corriger le nombre de cours du mois dans le widget
 - [X] corriger les couleurs dans gestion client des séances
+- [ ] corriger le nom dans l'historique dans la fiche client (NEW_ACCOUNT -> Création du compte)
+- [ ] corriger la plage horaire de présence pour valider a +10 minutes et -10 minutes de la séance
 
 ## Implémentation autre
 - [X] supprimer client habituel 4 semaines
@@ -34,3 +36,4 @@
 
 ## Optionnel
 - [ ] Ajouter un calendrier pour choisir les séances habituelles dans nouveau clients
+- [ ] Ajouter une section commantaires dans l'agenda

@@ -411,62 +411,75 @@ def planning():
     except ValueError:
         offset = 0
 
-    # calcul des dates de début et fin de la semaine affichée
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
     end_of_week = start_of_week + timedelta(days=4)
-
-    # formatage pour affichage
     period_title = f"Semaine du {start_of_week.strftime('%d/%m/%Y')} au {end_of_week.strftime('%d/%m/%Y')}"
 
-    # récupération du squellette du planning
     connection = get_db_connection()
+    
+    # Récupération du squelette du planning
     planning_squelett = connection.execute('''
         SELECT * FROM semaine_type
         WHERE actif = 1 
         ORDER BY heure_debut
-        ''').fetchall()
+    ''').fetchall()
+
+    # Récupération des habitudes (Clients réguliers)
+    # On joint la table habitudes avec la table clients pour avoir les noms
+    habitudes_data = connection.execute('''
+        SELECT h.creneau_id, c.prenom, c.nom
+        FROM habitudes h
+        JOIN clients c ON h.client_id = c.id
+    ''').fetchall()
+    
     connection.close()
 
-    # définition de la plage horaire du planning (de 8h à 20h)
+    # Organisation des clients par créneau pour accès rapide
+    # Dictionnaire : { creneau_id : ["Prenom Nom", "Prenom Nom"] }
+    clients_par_creneau = {}
+    for h in habitudes_data:
+        cid = h['creneau_id']
+        nom_complet = f"{h['prenom']} {h['nom']}"
+        if cid not in clients_par_creneau:
+            clients_par_creneau[cid] = []
+        clients_par_creneau[cid].append(nom_complet)
+
+    # Calcul des positions et hauteurs des créneaux pour affichage
     HEURE_DEBUT = 8
     HEURE_FIN = 20
     DUREE_TOTAL_MINUTES = (HEURE_FIN - HEURE_DEBUT) * 60
-
-    # génération de la liste des heures pour la colonne de gauche (8.00, 9.00, ..., 20.00)
     heure_affichage = [f"{h:02d}:00" for h in range(HEURE_DEBUT, HEURE_FIN + 1)]
 
-    # contruction du planning
     semaine_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
     planning = []
 
     for jour in range(5):
         jour_date = start_of_week + timedelta(days=jour)
-
-        # filtre des créneaux pour le jour courant
         creneaux_jour = [c for c in planning_squelett if c['jour_semaine'] == jour]
         creneaux_jour_processed = []
 
         for creneau in creneaux_jour:
             start_time = datetime.strptime(creneau['heure_debut'], '%H:%M')
             h, m = map(int, start_time.strftime('%H:%M').split(':'))
-
             min_from_begin = (h - HEURE_DEBUT) * 60 + m
-
             top_percent = (min_from_begin / DUREE_TOTAL_MINUTES) * 100
-
             height_percent = (creneau['duree'] / DUREE_TOTAL_MINUTES) * 100
 
+            # On récupère la liste des clients pour ce créneau précis
+            liste_clients = clients_par_creneau.get(creneau['id'], [])
+
             creneaux_jour_processed.append({
-                'data': creneau, # Les infos brutes (heure, type...)
-                'style': f"top: {top_percent}%; height: {height_percent}%;"
+                'data': creneau,
+                'style': f"top: {top_percent}%; height: {height_percent}%;",
+                'clients': liste_clients  # On ajoute la liste ici
             })
         
         planning.append({
             'nom': semaine_fr[jour],
-            'date_courte': jour_date.strftime('%d/%m'), # Ex: 04/02
-            'is_today': jour_date.date() == today.date(), # Pour le surlignage
-            'creneaux': creneaux_jour_processed # La liste des blocs positionnés
+            'date_courte': jour_date.strftime('%d/%m'),
+            'is_today': jour_date.date() == today.date(),
+            'creneaux': creneaux_jour_processed
         })
         
     return render_template('planning.html',

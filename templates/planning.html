@@ -58,6 +58,15 @@
         /* On enlève la bordure gauche bleue par défaut */
     }
 
+    .creneau-bloc {
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+    .creneau-bloc:hover {
+        transform: scale(1.02);
+        z-index: 20; /* Passe au dessus des autres au survol */
+    }
+
     /* --- COULEURS SPÉCIFIQUES (Inspirées de ton image) --- */
     
     /* Jaune (Pilates Intermédiaire) */
@@ -126,52 +135,130 @@
     </div>
 
     <div class="agenda-wrapper shadow-sm">
-        
-        <div class="d-flex border-bottom bg-light">
-            <div style="width: 60px; flex-shrink: 0;"></div>
-            {% for jour in semaine %}
-            <div class="flex-grow-1 text-center py-2 header-jour {{ 'is-today fw-bold' if jour.is_today else 'text-dark' }}">
-                {{ jour.nom }} <span class="small text-muted">{{ jour.date_courte }}</span>
-            </div>
-            {% endfor %}
-        </div>
-
         <div class="agenda-grid">
             <div class="col-heures">
                 {% for heure in heures %}
                 <div class="heure-repere">{{ heure }}</div>
                 {% endfor %}
             </div>
-            
+
             {% for jour in semaine %}
             <div class="col-jour {{ 'is-today' if jour.is_today else '' }}">
             
                 {% for creneau in jour.creneaux %}
                     
                     {% set type = creneau.data['type_seance'] %}
-                    {% if 'Intermédiaire' in type %}
-                        {% set couleur_class = 'bg-intermediaire' %}
-                    {% elif 'Fondamental' in type %}
-                        {% set couleur_class = 'bg-fondamental' %}
-                    {% elif 'Yoga' in type %}
-                        {% set couleur_class = 'bg-yoga' %}
-                    {% elif 'Mobilité' in type %}
-                        {% set couleur_class = 'bg-mobilite' %}
-                    {% elif 'Avancé' in type %}
-                        {% set couleur_class = 'bg-avance' %}
-                    {% else %}
-                        {% set couleur_class = 'bg-defaut' %}
+                    {% if 'Intermédiaire' in type %}{% set couleur_class = 'bg-intermediaire' %}
+                    {% elif 'Fondamental' in type %}{% set couleur_class = 'bg-fondamental' %}
+                    {% elif 'Yoga' in type %}{% set couleur_class = 'bg-yoga' %}
+                    {% elif 'Mobilité' in type %}{% set couleur_class = 'bg-mobilite' %}
+                    {% elif 'Avancé' in type %}{% set couleur_class = 'bg-avance' %}
+                    {% else %}{% set couleur_class = 'bg-defaut' %}
                     {% endif %}
 
-                    <div class="creneau-bloc {{ couleur_class }}" style="{{ creneau.style }}">
+                    <div class="creneau-bloc {{ couleur_class }}" 
+                         style="{{ creneau.style }}"
+                         data-bs-toggle="modal" 
+                         data-bs-target="#seanceModal"
+                         data-type="{{ creneau.data['type_seance'] }}"
+                         data-heure="{{ creneau.data['heure_debut'] }}"
+                         data-duree="{{ creneau.data['duree'] }}"
+                         data-clients='{{ creneau.clients | tojson }}'> 
+                        
                         <div class="fw-bold">{{ creneau.data['heure_debut'] }}</div>
                         <div class="text-truncate" style="font-weight: 500;">{{ creneau.data['type_seance'] }}</div>
+                        
+                        {% if creneau.clients|length > 0 %}
+                        <div style="font-size: 0.65rem; opacity: 0.9;">
+                            <i class="bi bi-person-fill"></i> {{ creneau.clients|length }} hab.
                         </div>
+                        {% endif %}
+                    </div>
                 {% endfor %}
             </div>
             {% endfor %}
         </div>
     </div>
-
 </div>
+
+<div class="modal fade" id="seanceModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-light">
+        <h5 class="modal-title" id="modalTitle">Détails de la séance</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="mb-4 text-center">
+            <h3 id="modalType" class="text-primary fw-bold mb-0">Type</h3>
+            <div class="text-muted fs-5">
+                <span id="modalHeure">00:00</span> • <span id="modalDuree">0</span> min
+            </div>
+        </div>
+
+        <hr>
+
+        <h6 class="fw-bold text-uppercase text-muted small mb-3">Clients Réguliers (Habitudes)</h6>
+        <ul class="list-group list-group-flush" id="modalClientsList">
+            </ul>
+        
+        <div id="noClientsMsg" class="text-center text-muted fst-italic py-2" style="display:none;">
+            Aucun client régulier inscrit sur ce créneau.
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var seanceModal = document.getElementById('seanceModal');
+        
+        seanceModal.addEventListener('show.bs.modal', function (event) {
+            // Bouton qui a déclenché le modal (le div .creneau-bloc)
+            var button = event.relatedTarget; 
+
+            // Extraction des infos depuis les attributs data-*
+            var type = button.getAttribute('data-type');
+            var heure = button.getAttribute('data-heure');
+            var duree = button.getAttribute('data-duree');
+            
+            // Les clients sont encodés en JSON par Jinja, on les parse
+            var clients = JSON.parse(button.getAttribute('data-clients'));
+
+            // Mise à jour du contenu du Modal
+            var modalTitle = seanceModal.querySelector('#modalTitle');
+            var modalType = seanceModal.querySelector('#modalType');
+            var modalHeure = seanceModal.querySelector('#modalHeure');
+            var modalDuree = seanceModal.querySelector('#modalDuree');
+            var clientsList = seanceModal.querySelector('#modalClientsList');
+            var noClientsMsg = seanceModal.querySelector('#noClientsMsg');
+
+            modalType.textContent = type;
+            modalHeure.textContent = heure;
+            modalDuree.textContent = duree;
+
+            // Vider la liste précédente
+            clientsList.innerHTML = '';
+
+            if (clients.length > 0) {
+                noClientsMsg.style.display = 'none';
+                clients.forEach(function(nom) {
+                    var li = document.createElement('li');
+                    li.className = 'list-group-item px-0 d-flex justify-content-between align-items-center';
+                    li.innerHTML = '<span class="fw-medium">' + nom + '</span> <span class="badge bg-light text-dark rounded-pill border">Habitué</span>';
+                    clientsList.appendChild(li);
+                });
+            } else {
+                noClientsMsg.style.display = 'block';
+            }
+        });
+    });
+</script>
+
 {% endblock %}
