@@ -9,7 +9,7 @@ date : 2026/01/21
 
 # imports des modules
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 # création des fonctions utilitaires
@@ -84,49 +84,68 @@ def get_client_most_remaining():
 
 
 
-def get_number_seances(since_date, until_date, time_space_minutes=120):
+def get_number_seances(since_date, until_date):
     """
     Fonction pour récupérer le nombre total de séances donnée par le prof depuis une date donnée.
-    En partant du principe qu'une séance est enregistrée par une action 'CHECK-IN' des participants.
-    Et que plusieurs CHECK-IN espacé de moins de time_space_minutes minutes correspondent à la même séance.
+    Compte les créneaux de semaine_type qui ont eu au moins un CHECK-IN.
     Args:
         since_date (str): date au format 'YYYY-MM-DD' pour filtrer le début des actions.
         until_date (str): date au format 'YYYY-MM-DD' pour filtrer la fin des actions.
-        time_space_minutes (int): intervalle de temps en minutes pour regrouper les CHECK-IN dans une même séance.
     Returns:
-        int: nombre total de séances.
+        int: nombre total de séances données.
     """
     connection = get_db_connection()
 
-    query = """
+    # Récupérer tous les CHECK-IN dans la période avec date/heure détaillée
+    query_checkins = """
         SELECT date_heure
         FROM historique_seances
         WHERE action = 'CHECK-IN'
         AND DATE(date_heure) BETWEEN ? AND ?
-        ORDER BY date_heure ASC;
     """
-
-    rows = connection.execute(query, (since_date, until_date)).fetchall()
-    connection.close()
-
-    if not rows:
+    
+    checkins = connection.execute(query_checkins, (since_date, until_date)).fetchall()
+    
+    if not checkins:
+        connection.close()
         return 0
 
-    # Regroupement des CHECK-IN en séances
-    seances = []
-    current_seance_start = datetime.strptime(rows[0]['date_heure'], '%Y-%m-%d %H:%M:%S')
+    # Récupérer tous les créneaux actifs
+    query_creneaux = """
+        SELECT id, jour_semaine, heure_debut, duree
+        FROM semaine_type
+        WHERE actif = 1
+    """
+    
+    creneaux = connection.execute(query_creneaux).fetchall()
+    connection.close()
 
-    for row in rows[1:]:
-        check_in_time = datetime.strptime(row['date_heure'], '%Y-%m-%d %H:%M:%S')
-        delta_minutes = (check_in_time - current_seance_start).total_seconds() / 60
-
-        if delta_minutes > time_space_minutes:
-            seances.append(current_seance_start)
-            current_seance_start = check_in_time
-
-    # Ajouter la dernière séance
-    seances.append(current_seance_start)
-    return len(seances)
+    # Set pour éviter les doublons de créneaux
+    seances_donnees = set()
+    
+    for checkin in checkins:
+        # Convertir le CHECK-IN en datetime Python
+        checkin_dt = datetime.strptime(checkin['date_heure'], '%Y-%m-%d %H:%M:%S')
+        jour_semaine = checkin_dt.weekday()  # 0=lundi, 1=mardi, etc.
+        heure_checkin = checkin_dt.time()
+        
+        # Trouver le créneau correspondant
+        for creneau in creneaux:
+            if creneau['jour_semaine'] == jour_semaine:
+                # Parser l'heure de début du créneau
+                heure_debut = datetime.strptime(creneau['heure_debut'], '%H:%M').time()
+                
+                # Calculer l'heure de fin (début + durée)
+                debut_dt = datetime.combine(checkin_dt.date(), heure_debut)
+                fin_dt = debut_dt + timedelta(minutes=creneau['duree'])
+                heure_fin = fin_dt.time()
+                
+                # Vérifier si le CHECK-IN est dans cette plage horaire
+                if heure_debut <= heure_checkin <= heure_fin:
+                    seances_donnees.add(creneau['id'])
+                    break  # On a trouvé le bon créneau, pas besoin de chercher plus
+    
+    return len(seances_donnees)
 
 
 def get_negative_seances_clients():

@@ -187,6 +187,8 @@ def ajout_client():
 
         abonnement = 1 if request.form.get('abonnement') else 0
 
+        creneau = request.form.get('creneau') # pour les habitudes (optionnel car on pourra le remplir par la suite)
+
         # vérification si le client existe déjà
         existing_client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
 
@@ -204,6 +206,10 @@ def ajout_client():
             # ajout dans historique seances
             connection.execute('INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)',(nouveau_client_id, 'NEW_ACCOUNT', seances_initiales))
 
+            # ajout des habitudes si un créneau a été sélectionné
+            if creneau:
+                connection.execute('INSERT INTO habitudes (client_id, creneau_id) VALUES (?, ?)', (nouveau_client_id, creneau))
+
             # commit des changements
             connection.commit() 
             connection.close()
@@ -212,9 +218,14 @@ def ajout_client():
             return redirect(url_for('index'))
 
     if request.method == "GET" :
+        planning = connection.execute('''
+        SELECT * FROM semaine_type
+        WHERE actif = 1 
+        ORDER BY jour_semaine, heure_debut
+        ''').fetchall()
         connection.close()
         # affichage du formulaire d'ajout de client
-        return render_template('ajout_client.html')
+        return render_template('ajout_client.html', planning=planning)
 
 
 

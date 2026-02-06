@@ -17,6 +17,7 @@
                             <th>Nom</th>
                             <th>Date d'inscription</th>
                             <th class="text-center">Séances restantes</th> <!-- Centre le texte de cette colonne -->
+                            <th>Détails</th>
                             <th>Ajout séances</th>
                         </tr>
                     </thead>
@@ -37,6 +38,11 @@
                                     {% endif %}">
                                     {{ client['seances_restantes'] }}
                                 </span>
+                            </td>
+                            <td class="text-center">
+                                <a href="{{ url_for('fiche_client', client_id=client['id']) }}" class="btn btn-sm btn-outline-primary">
+                                    👤 Info
+                                </a>
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-outline-success btn-ajout-rapide"

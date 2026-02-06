@@ -42,11 +42,30 @@
                     <input type="number" class="form-control w-50" id="seances_restantes" name="seances_restantes" value="0" min="0">
                 </div>
 
+                <hr class="my-4 text-muted">
+
+                <h5 class="text-primary mb-3">Créneau (Optionnel)</h5>
+                <div class="mb-4">
+                    <select class="form-select w-50" id="creneau" name="creneau">
+                        <option value="" selected>Aucun</option>
+                        {% for creneau in planning %}
+                        {% if creneau.jour_semaine == 0 %}{% set jour = 'Lundi' %}
+                        {% elif creneau.jour_semaine == 1 %}{% set jour = 'Mardi' %}
+                        {% elif creneau.jour_semaine == 2 %}{% set jour = 'Mercredi' %}
+                        {% elif creneau.jour_semaine == 3 %}{% set jour = 'Jeudi' %}
+                        {% elif creneau.jour_semaine == 4 %}{% set jour = 'Vendredi' %}
+                        {% elif creneau.jour_semaine == 5 %}{% set jour = 'Samedi' %}
+                        {% else %}{% set jour = 'Dimanche' %}
+                        {% endif %}
+                        <option value="{{ creneau.id }}">{{ jour }} {{ creneau.heure_debut }} - {{ creneau.type_seance }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="{{ url_for('gestion_clients') }}" class="btn btn-outline-secondary me-md-2">Annuler</a>
                     <button type="submit" class="btn btn-success px-4">Enregistrer le client</button>
                 </div>
-
             </form>
         </div>
     </div>
