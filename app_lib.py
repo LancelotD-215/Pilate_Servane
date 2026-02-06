@@ -125,7 +125,8 @@ def get_number_seances(since_date, until_date):
     
     for checkin in checkins:
         # Convertir le CHECK-IN en datetime Python
-        checkin_dt = datetime.strptime(checkin['date_heure'], '%Y-%m-%d %H:%M:%S')
+        date_str = checkin['date_heure'].replace('T', ' ')  # Gérer le format ISO avec T
+        checkin_dt = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
         jour_semaine = checkin_dt.weekday()  # 0=lundi, 1=mardi, etc.
         heure_checkin = checkin_dt.time()
         

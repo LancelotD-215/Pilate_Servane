@@ -414,38 +414,70 @@ def planning():
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
     end_of_week = start_of_week + timedelta(days=4)
+    
+    # Formatage dates pour SQL
+    start_sql = start_of_week.strftime('%Y-%m-%d')
+    end_sql = (end_of_week + timedelta(days=1)).strftime('%Y-%m-%d') # +1 jour pour inclure le vendredi soir
+
     period_title = f"Semaine du {start_of_week.strftime('%d/%m/%Y')} au {end_of_week.strftime('%d/%m/%Y')}"
 
     connection = get_db_connection()
     
-    # Récupération du squelette du planning
-    planning_squelett = connection.execute('''
-        SELECT * FROM semaine_type
-        WHERE actif = 1 
-        ORDER BY heure_debut
-    ''').fetchall()
+    # 1. Squelette planning
+    planning_squelett = connection.execute('SELECT * FROM semaine_type WHERE actif = 1 ORDER BY heure_debut').fetchall()
 
-    # Récupération des habitudes (Clients réguliers)
-    # On joint la table habitudes avec la table clients pour avoir les noms
+    # 2. Habitudes (Qui est censé venir ?)
     habitudes_data = connection.execute('''
-        SELECT h.creneau_id, c.prenom, c.nom
+        SELECT h.creneau_id, c.id as client_id, c.prenom, c.nom
         FROM habitudes h
         JOIN clients c ON h.client_id = c.id
     ''').fetchall()
     
+    # 3. Historique de la semaine (Qui est DÉJÀ venu ?)
+    # On cherche les CHECK-IN ou PRESENCE_VALIDEE dans la plage de la semaine affichée
+    presence_data = connection.execute('''
+        SELECT client_id, date_heure 
+        FROM historique_seances 
+        WHERE date_heure >= ? AND date_heure < ? 
+        AND action IN ('CHECK-IN', 'PRESENCE_VALIDEE')
+    ''', (start_sql, end_sql)).fetchall()
+
     connection.close()
 
-    # Organisation des clients par créneau pour accès rapide
-    # Dictionnaire : { creneau_id : ["Prenom Nom", "Prenom Nom"] }
+    # --- TRAITEMENT DES DONNÉES EN PYTHON ---
+
+    # A. Organiser les habitudes par créneau
+    # Dict: { creneau_id : [ {id: 1, nom: "Lancelot D"}, ... ] }
     clients_par_creneau = {}
     for h in habitudes_data:
         cid = h['creneau_id']
-        nom_complet = f"{h['prenom']} {h['nom']}"
         if cid not in clients_par_creneau:
             clients_par_creneau[cid] = []
-        clients_par_creneau[cid].append(nom_complet)
+        clients_par_creneau[cid].append({
+            'id': h['client_id'],
+            'nom': f"{h['prenom']} {h['nom']}"
+        })
 
-    # Calcul des positions et hauteurs des créneaux pour affichage
+    # B. Créer un set de présence pour vérification rapide
+    # Format de la clé : "ID_CLIENT|YYYY-MM-DD HH:MM" (On compare à la minute près le début du cours)
+    # Note : Dans la route 'presence', le check-in insère datetime.now(). 
+    # Si tu veux une correspondance parfaite, il faudra s'assurer que le check-in soit tolerant ou utilise l'heure du cours.
+    # ICI : On va simplifier -> Si le client a un check-in ce jour là dans une plage de +/- 2h autour du cours, ou pile à l'heure.
+    # Pour ton besoin strict "durant le créneau", on va faire une logique simple : Check sur la DATE et l'HEURE approximative.
+    
+    # Pour simplifier ton code actuel, supposons que 'PRESENCE_VALIDEE' met l'heure pile (c'est le cas).
+    # Pour les 'CHECK-IN' faits à la borne, ils ont l'heure réelle. 
+    # On va stocker : "client_id|YYYY-MM-DD" -> Liste des heures pointées
+    presences_map = {} 
+    for p in presence_data:
+        date_str = p['date_heure'].replace('T', ' ')  # Gérer le format ISO avec T
+        p_date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        key = f"{p['client_id']}|{p_date.strftime('%Y-%m-%d')}" # Clé = ID + Jour
+        if key not in presences_map:
+            presences_map[key] = []
+        presences_map[key].append(p_date.strftime('%H:%M')) # On stocke l'heure du pointage
+
+    # ... (Constantes HEURE_DEBUT, etc. inchangées) ...
     HEURE_DEBUT = 8
     HEURE_FIN = 20
     DUREE_TOTAL_MINUTES = (HEURE_FIN - HEURE_DEBUT) * 60
@@ -456,23 +488,66 @@ def planning():
 
     for jour in range(5):
         jour_date = start_of_week + timedelta(days=jour)
+        jour_date_str = jour_date.strftime('%Y-%m-%d') # Ex: 2026-02-06
+        
         creneaux_jour = [c for c in planning_squelett if c['jour_semaine'] == jour]
         creneaux_jour_processed = []
 
         for creneau in creneaux_jour:
+            # Calculs position (inchangé)
             start_time = datetime.strptime(creneau['heure_debut'], '%H:%M')
-            h, m = map(int, start_time.strftime('%H:%M').split(':'))
-            min_from_begin = (h - HEURE_DEBUT) * 60 + m
+            h_debut, m_debut = map(int, start_time.strftime('%H:%M').split(':'))
+            min_from_begin = (h_debut - HEURE_DEBUT) * 60 + m_debut
             top_percent = (min_from_begin / DUREE_TOTAL_MINUTES) * 100
             height_percent = (creneau['duree'] / DUREE_TOTAL_MINUTES) * 100
 
-            # On récupère la liste des clients pour ce créneau précis
-            liste_clients = clients_par_creneau.get(creneau['id'], [])
+            # --- LOGIQUE PRÉSENCE ---
+            # On récupère les habitués de ce créneau
+            raw_clients = clients_par_creneau.get(creneau['id'], [])
+            final_clients = []
+
+            for cl in raw_clients:
+                is_present = False
+                # Clé de recherche : Ce client, ce jour là
+                lookup_key = f"{cl['id']}|{jour_date_str}"
+                
+                if lookup_key in presences_map:
+                    # Le client a pointé ce jour là. Est-ce pendant CE cours ?
+                    # On regarde s'il y a un pointage proche de l'heure de début (ex: check-in réel)
+                    # OU si c'est pile l'heure de début (bouton manuel)
+                    heures_pointages = presences_map[lookup_key]
+                    cours_h_debut = creneau['heure_debut'] # "10:00"
+                    
+                    # Logique : Si on trouve l'heure exacte (Marquage manuel) OU heure proche (Check-in borne)
+                    # Pour l'instant, vérifions simple : Si le bouton manuel met l'heure pile, ça matchera ici.
+                    # Pour les check-ins bornes, il faudrait convertir en minutes et voir si écart < 60min.
+                    # Simplifions : Si une action existe ce jour là vers cette heure.
+                    # Pour ton code actuel, je vais check si l'heure du cours est dans la liste (cas bouton manuel)
+                    # ou si on a un checkin.
+                    
+                    # Amélioration : On considère présent si un pointage existe entre heure_debut et heure_fin
+                    course_start_min = h_debut * 60 + m_debut
+                    course_end_min = course_start_min + creneau['duree']
+
+                    for hp in heures_pointages:
+                        hp_h, hp_m = map(int, hp.split(':'))
+                        pointage_min = hp_h * 60 + hp_m
+                        # Si le pointage est entre le début (-15min avance) et la fin du cours
+                        if (course_start_min - 30) <= pointage_min <= course_end_min:
+                            is_present = True
+                            break
+
+                final_clients.append({
+                    'id': cl['id'],
+                    'nom': cl['nom'],
+                    'present': is_present
+                })
 
             creneaux_jour_processed.append({
                 'data': creneau,
                 'style': f"top: {top_percent}%; height: {height_percent}%;",
-                'clients': liste_clients  # On ajoute la liste ici
+                'clients': final_clients,
+                'date_reelle': jour_date_str # On passe la vraie date pour le formulaire
             })
         
         planning.append({
@@ -488,6 +563,40 @@ def planning():
                            offset=offset,
                            heures=heure_affichage)
 
+
+
+@app.route('/marquer_presence', methods=['POST'])
+def marquer_presence():
+    """
+    Fonction exécutée lors de l'accès à la page '/marquer_presence'.
+    Args:
+        None
+    Returns:
+        str: redirection vers la page de planning.
+    """
+    client_id = request.form['client_id']
+    date_seance = request.form['date_seance'] # Format YYYY-MM-DD
+    heure_seance = request.form['heure_seance'] # Format HH:MM
+    
+    # On reconstruit le timestamp exact du début du cours
+    timestamp_seance = f"{date_seance} {heure_seance}:00"
+
+    connection = get_db_connection()
+
+    # Débiter le client
+    connection.execute('UPDATE clients SET seances_restantes = seances_restantes - 1 WHERE id = ?', (client_id,))
+
+    # Ajouter l'historique (Note le -1 et l'action spécifique)
+    connection.execute('''
+        INSERT INTO historique_seances (client_id, action, nombre, date_heure) 
+        VALUES (?, ?, ?, ?)
+    ''', (client_id, "PRESENCE_VALIDEE", -1, timestamp_seance))
+
+    connection.commit()
+    connection.close()
+
+    # On recharge la page planning (on essaie de rester sur la même semaine si possible)
+    return redirect(request.referrer or url_for('planning'))
 
 # lancement de l'application Flask
 if __name__ == '__main__':

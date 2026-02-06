@@ -157,20 +157,23 @@
                     {% endif %}
 
                     <div class="creneau-bloc {{ couleur_class }}" 
-                         style="{{ creneau.style }}"
-                         data-bs-toggle="modal" 
-                         data-bs-target="#seanceModal"
-                         data-type="{{ creneau.data['type_seance'] }}"
-                         data-heure="{{ creneau.data['heure_debut'] }}"
-                         data-duree="{{ creneau.data['duree'] }}"
-                         data-clients='{{ creneau.clients | tojson }}'> 
+                        style="{{ creneau.style }}"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#seanceModal"
+                        data-type="{{ creneau.data['type_seance'] }}"
+                        data-heure="{{ creneau.data['heure_debut'] }}"
+                        data-duree="{{ creneau.data['duree'] }}"
+                        data-date="{{ creneau.date_reelle }}" data-clients='{{ creneau.clients | tojson }}'>
                         
                         <div class="fw-bold">{{ creneau.data['heure_debut'] }}</div>
                         <div class="text-truncate" style="font-weight: 500;">{{ creneau.data['type_seance'] }}</div>
+
+                        {% set present_count = 0 %}
+                        {% for c in creneau.clients %}{% if c.present %}{% set present_count = present_count + 1 %}{% endif %}{% endfor %}
                         
                         {% if creneau.clients|length > 0 %}
                         <div style="font-size: 0.65rem; opacity: 0.9;">
-                            <i class="bi bi-person-fill"></i> {{ creneau.clients|length }} hab.
+                            <i class="bi bi-person-fill"></i> {{ present_count }} / {{ creneau.clients|length }}
                         </div>
                         {% endif %}
                     </div>
@@ -220,41 +223,70 @@
         var seanceModal = document.getElementById('seanceModal');
         
         seanceModal.addEventListener('show.bs.modal', function (event) {
-            // Bouton qui a déclenché le modal (le div .creneau-bloc)
             var button = event.relatedTarget; 
-
-            // Extraction des infos depuis les attributs data-*
+            
+            // Récupération des datas depuis le bloc HTML cliqué
             var type = button.getAttribute('data-type');
             var heure = button.getAttribute('data-heure');
             var duree = button.getAttribute('data-duree');
+            var dateReelle = button.getAttribute('data-date'); // La date précise (YYYY-MM-DD)
             
-            // Les clients sont encodés en JSON par Jinja, on les parse
+            // Les clients sont parsés depuis le JSON
             var clients = JSON.parse(button.getAttribute('data-clients'));
 
-            // Mise à jour du contenu du Modal
-            var modalTitle = seanceModal.querySelector('#modalTitle');
+            // Sélection des éléments dans le Pop-up
             var modalType = seanceModal.querySelector('#modalType');
             var modalHeure = seanceModal.querySelector('#modalHeure');
             var modalDuree = seanceModal.querySelector('#modalDuree');
             var clientsList = seanceModal.querySelector('#modalClientsList');
             var noClientsMsg = seanceModal.querySelector('#noClientsMsg');
 
+            // Remplissage des infos générales
             modalType.textContent = type;
             modalHeure.textContent = heure;
             modalDuree.textContent = duree;
 
-            // Vider la liste précédente
+            // Reset de la liste (pour ne pas empiler les anciens clics)
             clientsList.innerHTML = '';
 
             if (clients.length > 0) {
                 noClientsMsg.style.display = 'none';
-                clients.forEach(function(nom) {
+                
+                // Boucle sur chaque client pour créer sa ligne
+                clients.forEach(function(client) {
                     var li = document.createElement('li');
                     li.className = 'list-group-item px-0 d-flex justify-content-between align-items-center';
-                    li.innerHTML = '<span class="fw-medium">' + nom + '</span> <span class="badge bg-light text-dark rounded-pill border">Habitué</span>';
+                    
+                    // Nom du client
+                    var nomSpan = '<span class="fw-medium">' + client.nom + '</span>';
+                    
+                    // Zone d'action (Badge ou Bouton)
+                    var actionHtml = '';
+
+                    if (client.present) {
+                        // CAS 1 : IL EST DÉJÀ POINTÉ -> Badge Vert
+                        actionHtml = '<span class="badge bg-success rounded-pill"><i class="bi bi-check-lg"></i> Présent</span>';
+                    } else {
+                        // CAS 2 : PAS ENCORE POINTÉ -> Bouton pour valider
+                        // On crée un formulaire invisible qui envoie les infos au serveur
+                        actionHtml = `
+                            <form action="/marquer_presence" method="POST" style="margin:0;">
+                                <input type="hidden" name="client_id" value="${client.id}">
+                                <input type="hidden" name="date_seance" value="${dateReelle}">
+                                <input type="hidden" name="heure_seance" value="${heure}">
+                                <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">
+                                    Marquer présence
+                                </button>
+                            </form>
+                        `;
+                    }
+
+                    // Assemblage
+                    li.innerHTML = nomSpan + '<div>' + actionHtml + '</div>';
                     clientsList.appendChild(li);
                 });
             } else {
+                // Aucun habitué inscrit
                 noClientsMsg.style.display = 'block';
             }
         });
