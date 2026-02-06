@@ -66,23 +66,24 @@ def main():
     (0, '19:15', 45, 'Pilates Fondamental'),
     (0, '20:00', 45, 'Pilates Intermédiaire'),
 
-    # --- MARDI (Les 2 derniers du mercredi décalés ici) ---
-    (1, '19:15', 45, 'Pilates Intermédiaire'),
-    (1, '20:00', 45, 'Pilates Avancé'),
+    # --- MARDI ---
+    (1, '19:15', 45, 'Pilates Fondamental'),
+    (1, '20:00', 45, 'Pilates Intermédiaire'),
+    
 
     # --- MERCREDI ---
     (2, '09:00', 45, 'Pilates Intermédiaire'),
     (2, '10:00', 60, 'Yoga Doux'), # Attention durée 1h
     (2, '12:30', 45, 'Pilates Fondamental'),
     (2, '18:30', 45, 'Pilates Fondamental'),
-    # Les créneaux de 19:15 et 20:00 ont été déplacés au Mardi comme demandé
+    (2, '19:15', 45, 'Pilates Intermédiaire'),
+    (2, '20:00', 45, 'Pilates Avancé'),
 
     # --- JEUDI ---
     (3, '09:30', 45, 'Pilates Fondamental'),
     (3, '10:30', 60, 'Mobilité et respiration'), # Durée 1h
-    (3, '18:30', 45, 'Pilates Intermédiaire'),
-    (3, '19:15', 45, 'Pilates Fondamental'),
-    (3, '20:00', 45, 'Pilates Intermédiaire')
+    (3, '18:30', 45, 'Pilates Intermédiaire')
+    
 ]
     for creneau in planning_reel:
         conn.execute("INSERT INTO semaine_type (jour_semaine, heure_debut, duree, type_seance) VALUES (?, ?, ?, ?)", creneau)

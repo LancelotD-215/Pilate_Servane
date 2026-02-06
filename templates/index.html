@@ -16,7 +16,7 @@
             </div>
             
             <div class="card-body">
-                <p class="card-text text-danger">Ces clients ont consommé plus de séances qu'ils n'en ont payé :</p>
+                <p class="card-text text-danger">Ces clients ont un solde de séances négatif :</p>
                 
                 <div class="list-group">
                     {% for client in negative_clients %}
@@ -32,6 +32,41 @@
                                     data-prenom="{{ client['prenom'] }}"
                                     data-nom="{{ client['nom'] }}">
                                 Régulariser
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if widgets['zero_balance'] and zero_clients %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-warning">
+            <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Attention : Soldes à Zéro</h5>
+                <span class="badge bg-white text-warning">{{ zero_clients|length }} client(s)</span>
+            </div>
+            
+            <div class="card-body">
+                <p class="card-text text-warning">Ces clients ont un solde de séances à zéro :</p>
+                
+                <div class="list-group">
+                    {% for client in zero_clients %}
+                    <div class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ client['prenom'] }} {{ client['nom'] }}</strong>
+                        </div>
+                        <div class="fw-bold">                        
+                            <button type="button" class="btn btn-sm btn-outline-primary ms-3 btn-regulariser"
+                                    data-id="{{ client['id'] }}"
+                                    data-prenom="{{ client['prenom'] }}"
+                                    data-nom="{{ client['nom'] }}">
+                                Ajouter des séances
                             </button>
                         </div>
                     </div>

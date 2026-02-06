@@ -30,6 +30,8 @@
                                 <span class="badge rounded-pill 
                                     {% if client['seances_restantes'] > 0 %}
                                         bg-success
+                                    {% elif client['seances_restantes'] == 0 %}
+                                        bg-warning
                                     {% else %}
                                         bg-danger
                                     {% endif %}">

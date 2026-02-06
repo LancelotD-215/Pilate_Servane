@@ -149,3 +149,25 @@ def get_negative_seances_clients():
     results = connection.execute(query).fetchall()
     connection.close()
     return results
+
+
+def get_zero_clients():
+    """
+    Fonction pour récupérer la liste des clients avec un solde de séances à zéro.
+    Args:
+        None
+    Returns:
+        list: liste des clients avec un solde de séances à zéro.
+    """
+    connection = get_db_connection()
+
+    query = """
+        SELECT id, prenom, nom, seances_restantes
+        FROM clients
+        WHERE seances_restantes = 0
+        ORDER BY nom ASC, prenom ASC
+    """
+
+    results = connection.execute(query).fetchall()
+    connection.close()
+    return results

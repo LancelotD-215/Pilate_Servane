@@ -10,7 +10,7 @@ date : 2026/01/20
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime, timedelta
-from app_lib import get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients
+from app_lib import get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients, get_zero_clients
 
 # création de l'application Flask
 app = Flask(__name__) # création du site web
@@ -34,6 +34,7 @@ def index():
     # CONFIGURATION DES WIDGETS
     widgets_config = {
         'negative_balance': True,
+        'zero_balance': True,
         'best_client_month': True,
         'best_client_all_time': False,
         'most_remaining': True,
@@ -56,6 +57,8 @@ def index():
     # création des données pour les widgets
     if widgets_config['negative_balance']:
         negative_clients = get_negative_seances_clients()
+    if widgets_config['zero_balance']:
+        zero_clients = get_zero_clients()
     if widgets_config['best_client_month']:
         best_clients_month = get_best_clients(first_day_of_month, actual_date) # du mois courant
     if widgets_config['best_client_all_time']:
@@ -75,6 +78,7 @@ def index():
     return render_template('index.html', 
                            widgets=widgets_config,
                            negative_clients=negative_clients,
+                           zero_clients=zero_clients,
                            best_clients_month=best_clients_month,  
                            client_most_remaining=client_most_remaining, 
                            total_clients=total_clients, 
