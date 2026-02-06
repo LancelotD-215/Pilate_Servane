@@ -135,6 +135,14 @@
     </div>
 
     <div class="agenda-wrapper shadow-sm">
+        <div class="d-flex border-bottom bg-light">
+            <div style="width: 60px; flex-shrink: 0;"></div>
+            {% for jour in semaine %}
+            <div class="flex-grow-1 text-center py-2 header-jour {{ 'is-today fw-bold' if jour.is_today else 'text-dark' }}">
+                {{ jour.nom }} <span class="small text-muted">{{ jour.date_courte }}</span>
+            </div>
+            {% endfor %}
+        </div>
         <div class="agenda-grid">
             <div class="col-heures">
                 {% for heure in heures %}
@@ -167,15 +175,6 @@
                         
                         <div class="fw-bold">{{ creneau.data['heure_debut'] }}</div>
                         <div class="text-truncate" style="font-weight: 500;">{{ creneau.data['type_seance'] }}</div>
-
-                        {% set present_count = 0 %}
-                        {% for c in creneau.clients %}{% if c.present %}{% set present_count = present_count + 1 %}{% endif %}{% endfor %}
-                        
-                        {% if creneau.clients|length > 0 %}
-                        <div style="font-size: 0.65rem; opacity: 0.9;">
-                            <i class="bi bi-person-fill"></i> {{ present_count }} / {{ creneau.clients|length }}
-                        </div>
-                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
@@ -202,7 +201,7 @@
 
         <hr>
 
-        <h6 class="fw-bold text-uppercase text-muted small mb-3">Clients Réguliers (Habitudes)</h6>
+        <h6 class="fw-bold text-uppercase text-muted small mb-3" id="clientsReguliersTitle">Clients Réguliers (Habitudes)</h6>
         <ul class="list-group list-group-flush" id="modalClientsList">
             </ul>
         
@@ -219,58 +218,103 @@
 </div>
 
 <script>
+    // Fonction appelée quand on clique sur "Marquer présence"
+    function validerPresenceAjax(event, formElement) {
+        // 1. Bloquer le rechargement de la page standard
+        event.preventDefault();
+
+        // 2. Récupérer les données du formulaire
+        var formData = new FormData(formElement);
+
+        // 3. Envoyer la requête au serveur en arrière-plan (AJAX)
+        fetch('/marquer_presence', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                // Le serveur a bien traité la demande (optionnel : logguer le succès)
+                console.log("Présence validée en base de données");
+            } else {
+                alert("Erreur lors de la validation de la présence");
+            }
+        }).catch(error => {
+            console.error('Erreur:', error);
+            alert("Erreur de connexion");
+        });
+
+        // 4. MODIFICATION VISUELLE IMMÉDIATE (UI Optimiste)
+        // On remplace le formulaire (le bouton) par le badge vert
+        var parentDiv = formElement.parentElement;
+        parentDiv.innerHTML = '<span class="badge bg-success rounded-pill"><i class="bi bi-check-lg"></i> Présent</span>';
+
+        // 5. Mise à jour du compteur en haut (Optionnel mais classe)
+        var titleElement = document.getElementById('clientsReguliersTitle');
+        var text = titleElement.textContent; // Ex: "Clients Réguliers (2 / 5)"
+        
+        // On extrait les nombres avec une regex ou découpage simple
+        var matches = text.match(/\((\d+)\s\/\s(\d+)\)/);
+        if (matches) {
+            var currentPresent = parseInt(matches[1]);
+            var total = parseInt(matches[2]);
+            // On incrémente
+            var newPresent = currentPresent + 1;
+            // On remet le texte à jour
+            titleElement.textContent = 'Clients Réguliers (' + newPresent + ' / ' + total + ')';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var seanceModal = document.getElementById('seanceModal');
         
         seanceModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget; 
             
-            // Récupération des datas depuis le bloc HTML cliqué
+            // Récupération des datas
             var type = button.getAttribute('data-type');
             var heure = button.getAttribute('data-heure');
             var duree = button.getAttribute('data-duree');
-            var dateReelle = button.getAttribute('data-date'); // La date précise (YYYY-MM-DD)
+            var dateReelle = button.getAttribute('data-date');
             
             // Les clients sont parsés depuis le JSON
             var clients = JSON.parse(button.getAttribute('data-clients'));
 
-            // Sélection des éléments dans le Pop-up
+            // Sélection des éléments DOM
             var modalType = seanceModal.querySelector('#modalType');
             var modalHeure = seanceModal.querySelector('#modalHeure');
             var modalDuree = seanceModal.querySelector('#modalDuree');
             var clientsList = seanceModal.querySelector('#modalClientsList');
             var noClientsMsg = seanceModal.querySelector('#noClientsMsg');
+            var clientsReguliersTitle = seanceModal.querySelector('#clientsReguliersTitle');
 
-            // Remplissage des infos générales
+            // Remplissage infos
             modalType.textContent = type;
             modalHeure.textContent = heure;
             modalDuree.textContent = duree;
 
-            // Reset de la liste (pour ne pas empiler les anciens clics)
             clientsList.innerHTML = '';
+
+            // Calcul compteur initial
+            var presentCount = clients.filter(client => client.present).length;
+            clientsReguliersTitle.textContent = 'Clients Réguliers (' + presentCount + ' / ' + clients.length + ')';
 
             if (clients.length > 0) {
                 noClientsMsg.style.display = 'none';
                 
-                // Boucle sur chaque client pour créer sa ligne
                 clients.forEach(function(client) {
                     var li = document.createElement('li');
                     li.className = 'list-group-item px-0 d-flex justify-content-between align-items-center';
                     
-                    // Nom du client
                     var nomSpan = '<span class="fw-medium">' + client.nom + '</span>';
-                    
-                    // Zone d'action (Badge ou Bouton)
                     var actionHtml = '';
 
                     if (client.present) {
-                        // CAS 1 : IL EST DÉJÀ POINTÉ -> Badge Vert
+                        // CAS 1 : DÉJÀ PRÉSENT (Base de données)
                         actionHtml = '<span class="badge bg-success rounded-pill"><i class="bi bi-check-lg"></i> Présent</span>';
                     } else {
-                        // CAS 2 : PAS ENCORE POINTÉ -> Bouton pour valider
-                        // On crée un formulaire invisible qui envoie les infos au serveur
+                        // CAS 2 : BOUTON (Avec appel AJAX)
+                        // Note l'ajout de onsubmit="validerPresenceAjax(...)"
                         actionHtml = `
-                            <form action="/marquer_presence" method="POST" style="margin:0;">
+                            <form onsubmit="validerPresenceAjax(event, this)" action="/marquer_presence" method="POST" style="margin:0;">
                                 <input type="hidden" name="client_id" value="${client.id}">
                                 <input type="hidden" name="date_seance" value="${dateReelle}">
                                 <input type="hidden" name="heure_seance" value="${heure}">
@@ -281,12 +325,10 @@
                         `;
                     }
 
-                    // Assemblage
                     li.innerHTML = nomSpan + '<div>' + actionHtml + '</div>';
                     clientsList.appendChild(li);
                 });
             } else {
-                // Aucun habitué inscrit
                 noClientsMsg.style.display = 'block';
             }
         });

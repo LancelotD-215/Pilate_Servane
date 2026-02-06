@@ -419,7 +419,9 @@ def planning():
     start_sql = start_of_week.strftime('%Y-%m-%d')
     end_sql = (end_of_week + timedelta(days=1)).strftime('%Y-%m-%d') # +1 jour pour inclure le vendredi soir
 
-    period_title = f"Semaine du {start_of_week.strftime('%d/%m/%Y')} au {end_of_week.strftime('%d/%m/%Y')}"
+    # Calcul du numéro de semaine ISO
+    week_number = start_of_week.isocalendar()[1]
+    period_title = f"Semaine {week_number}"
 
     connection = get_db_connection()
     

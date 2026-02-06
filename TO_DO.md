@@ -37,3 +37,6 @@
 ## Optionnel
 - [ ] Ajouter un calendrier pour choisir les séances habituelles dans nouveau clients
 - [ ] Ajouter une section commantaires dans l'agenda
+
+## Comprehension du code
+- [ ] Comprendre le code de route de la pop up dans l'agnda 
