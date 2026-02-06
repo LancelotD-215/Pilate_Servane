@@ -13,5 +13,6 @@ out/
 
 # Ignorer les fichiers systèmes VS Code (optionnel, selon tes goûts)
 .vscode/
+*.pyc
 
 ngrok.exe

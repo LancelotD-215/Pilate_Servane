@@ -17,7 +17,7 @@ def get_db_connection():
     """
     Fonction de connexion à la base de données.
     Appelée à chaque requête pour lire ou écrire des données.
-    Args:
+    Args:j
         None
     Returns:
         sqlite3.Connection: lien de connexion à la base de données.
