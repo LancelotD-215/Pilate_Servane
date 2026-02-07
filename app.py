@@ -157,6 +157,9 @@ def presence():
         prenom = prenom.strip().title()
         nom = nom.strip().title() 
 
+        # récuperation de l'heure actuelle à Paris
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         # recherche du client dans la base de données
         client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
         
@@ -168,7 +171,7 @@ def presence():
             connection.execute('UPDATE clients SET seances_restantes = seances_restantes - 1, total_seances_faites = total_seances_faites + 1 WHERE id = ?', (client_id,))
 
             # ajout dans historique seances
-            connection.execute('INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)', (client_id, "CHECK-IN", -1))
+            connection.execute('INSERT INTO historique_seances (client_id, action, nombre, date_heure) VALUES (?, ?, ?, ?)', (client_id, "CHECK-IN", -1, current_time))
 
             # commit des changements
             connection.commit() 
@@ -440,6 +443,7 @@ def planning():
     except ValueError:
         offset = 0
 
+    # calcul des dates de début et de fin de la semaine à afficher
     today = datetime.now()
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
     end_of_week = start_of_week + timedelta(days=4)
@@ -563,8 +567,8 @@ def planning():
                     for hp in heures_pointages:
                         hp_h, hp_m = map(int, hp.split(':'))
                         pointage_min = hp_h * 60 + hp_m
-                        # Si le pointage est entre le début (-15min avance) et la fin du cours
-                        if (course_start_min - 30) <= pointage_min <= course_end_min:
+                        # Si le pointage est entre le début (avance de 30 minutes) et la fin du cours
+                        if (course_start_min - 30) <= pointage_min <= course_end_min: # le -30min permet de prendre en compte les check-ins faits un peu avant le début du cours
                             is_present = True
                             break
 

@@ -122,13 +122,12 @@ Projet_Pilate/
 ## 🚀 6. Fonctionnalités en Développement
 
 ### 📋 **Prochaines Étapes**
-- [ ] Pop-up détail des séances dans le planning
+- [X] Pop-up détail des séances dans le planning
 - [ ] Widget "clients absents depuis 1 mois"
 - [ ] Configuration dynamique des widgets
-- [ ] Ajout de séances depuis la fiche client
+- [X] Ajout de séances depuis la fiche client
 - [ ] Modification des habitudes clients
 - [ ] Historique complet illimité
-- [ ] Calcul automatique des habitudes récurrentes
 
 ### 🔮 **Évolutions Futures**
 - [ ] Authentification et gestion des utilisateurs

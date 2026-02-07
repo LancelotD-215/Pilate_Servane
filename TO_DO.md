@@ -22,12 +22,15 @@
 - [X] corriger le nombre de cours du mois dans le widget
 - [X] corriger les couleurs dans gestion client des séances
 - [X] corriger le nom dans l'historique dans la fiche client (NEW_ACCOUNT -> Création du compte)
-- [ ] corriger la plage horaire de présence pour valider a +10 minutes et -10 minutes de la séance
+- [X] corriger la plage horaire de présence pour valider a -30 min avant la séance
+- [X] corriger la bonne heure
+- [ ] corriger l'affichage des séances habituelles dans la fiche client
+- [ ] corriger l'heure pour ne pas avoir de faille en changeant l'heure de son telephone
 
 ## Implémentation autre
 - [X] supprimer client habituel 4 semaines
 - [X] Ajouter séances habituelles dans nouveau client
-- [ ] Ajouter fonction ajout séances dans fiche client
+- [X] Ajouter fonction ajout séances dans fiche client
 - [ ] Ajouter fonction modification (ou ajouts) séances habituelles dans fiche client
 - [ ] ajout bouton pour afficher tout l'historique d'un client dans la fiche client
 
@@ -38,9 +41,11 @@
 - [ ] Ajouter un calendrier pour choisir les séances habituelles dans nouveau clients
 - [ ] Ajouter une section commantaires dans l'agenda
 - [ ] Ajouter une colonne dernière séance dans la gestion client
+- [ ] Rectifier habitude en inscrit
 
 ## Personalisations
-- [ ] Personnaliser les noms dans les pop up de l'agenda
+- [X] Personnaliser les noms dans les pop up de l'agenda
 
 ## Comprehension du code
 - [ ] Comprendre le code de route de la pop up dans l'agnda 
+- [ ] Comprendre le code html et css de l'agenda

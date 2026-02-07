@@ -10,6 +10,7 @@ date : 2026/01/21
 # imports des modules
 import sqlite3
 from datetime import datetime, timedelta
+import locale
 
 
 # création des fonctions utilitaires
