@@ -13,11 +13,11 @@
                 <table id="tableauClients" class="table table-striped mb-0"> <!-- Table Bootstrap avec lignes alternées (striped) et marge basse nulle -->
                     <thead>
                         <tr>
-                            <th>Prénom</th>
-                            <th>Nom</th>
-                            <th class="text-center">Séances restantes</th> <!-- Centre le texte de cette colonne -->
-                            <th>Détails</th>
-                            <th>Ajout séances</th>
+                            <th class="w-25">Prénom</th>
+                            <th class="w-25">Nom</th>
+                            <th class="text-center w-45">Séances restantes</th>
+                            <th class="text-center w-5">Infos</th>
+                            <th class="text-center w-5">Ajout</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,13 +38,13 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill btn-voir-fiche"
+                                <button type="button" class="btn btn-sm btn-outline-info rounded-pill btn-voir-fiche"
                                         data-client-id="{{ client['id'] }}">
                                     ℹ️
                                 </button>
                             </td>
                             <td class="text-center">
-                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill btn-ajout-rapide"
+                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill btn-ajout-rapide"
                                 data-id="{{ client['id'] }}"
                                 data-prenom="{{ client['prenom'] }}"
                                 data-nom="{{ client['nom'] }}">
@@ -61,29 +61,34 @@
 </div>
 
 <div class="modal fade" id="modalAjoutSeance" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form action="/ajout_seances_rapide" method="POST">
           
-        <div class="modal-header bg-info text-dark">
-          <h5 class="modal-title">Recharger séances</h5>
+        <div class="modal-header bg-light">
+          <h5 class="modal-title">Recharger un compte en séances</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         
         <div class="modal-body">
-          <p id="modalClientNom" class="fw-bold text-center fs-5"></p>
+            <div class="mb-4 text-center">
+                    <p class="text-center">Ajout de séances pour :</p>
+                    <h3 id="modalClientNom" class="text-primary fw-bold mb-0"></h3>
+            </div>
           
           <input type="hidden" name="client_id" id="inputClientId">
 
+          <hr>
+
           <div class="mb-3">
             <label class="form-label">Nombre de séances à ajouter</label>
-            <input type="number" class="form-control form-control-lg text-center" name="seances_ajoutees" value="3" min="1" required>
+            <input type="number" class="form-control form-control-lg text-center" name="seances_ajoutees" value="5" min="1" required>
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button type="submit" class="btn btn-success">Valider l'ajout</button>
+          <button type="submit" class="btn btn-primary">Valider</button>
         </div>
 
       </form>

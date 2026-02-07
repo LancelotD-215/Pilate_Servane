@@ -7,7 +7,7 @@
 - [X] Créer la page calendrier
 - [X] créer le pop up de quand on clique sur une séance pour afficher plus d'infos et pouvoir valider les présences
 - [X] Integrer la gestion client dans l'agenda
-- [ ] Validation séances dans l'agenda
+- [X] Validation séances dans l'agenda
 - [ ] Ajouter des séances dans l'agenda de manière ponctuelle
 - [ ] Ajouter des séances dans l'agenda de manière definitive
 - [ ] Supprimer des séances dans l'agenda de manière ponctuelle
@@ -37,6 +37,10 @@
 ## Optionnel
 - [ ] Ajouter un calendrier pour choisir les séances habituelles dans nouveau clients
 - [ ] Ajouter une section commantaires dans l'agenda
+- [ ] Ajouter une colonne dernière séance dans la gestion client
+
+## Personalisations
+- [ ] Personnaliser les noms dans les pop up de l'agenda
 
 ## Comprehension du code
 - [ ] Comprendre le code de route de la pop up dans l'agnda 
