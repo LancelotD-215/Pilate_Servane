@@ -138,7 +138,7 @@ def presence():
             client_id = client['id']
 
             # mise à jour de la présence du client dans la base de données
-            connection.execute('UPDATE clients SET seances_restantes = seances_restantes - 1 WHERE id = ?', (client_id,))
+            connection.execute('UPDATE clients SET seances_restantes = seances_restantes - 1, total_seances_faites = total_seances_faites + 1 WHERE id = ?', (client_id,))
 
             # ajout dans historique seances
             connection.execute('INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)', (client_id, "CHECK-IN", -1))
@@ -375,13 +375,22 @@ def fiche_client(client_id):
     ''', (client_id,)).fetchall()
 
     # récupération de l'historique des séances du client (10 dernières actions)
-    historique = connection.execute('''
+    historique_raw = connection.execute('''
         SELECT date_heure, action, nombre 
         FROM historique_seances 
         WHERE client_id = ? 
         ORDER BY date_heure DESC 
         LIMIT 10
     ''', (client_id,)).fetchall()
+
+    # formatage des dates pour l'affichage (suppression du "T" ISO)
+    historique = []
+    for entry in historique_raw:
+        historique.append({
+            'date_heure': entry['date_heure'].replace('T', ' '),
+            'action': entry['action'],
+            'nombre': entry['nombre']
+        })
 
     # fermeture de la connexion à la base de données
     connection.close()
@@ -588,8 +597,8 @@ def marquer_presence():
     connection = get_db_connection()
 
     # Débiter le client
-    connection.execute('UPDATE clients SET seances_restantes = seances_restantes - 1 WHERE id = ?', (client_id,))
-
+    connection.execute('UPDATE clients SET seances_restantes = seances_restantes - 1, total_seances_faites = total_seances_faites + 1 WHERE id = ?', (client_id,))
+    
     # Ajouter l'historique (Note le -1 et l'action spécifique)
     connection.execute('''
         INSERT INTO historique_seances (client_id, action, nombre, date_heure) 

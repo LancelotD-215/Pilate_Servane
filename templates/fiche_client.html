@@ -74,8 +74,10 @@
                         {% elif event['action'] == 'ADD_SEANCES' %}
                             <span class="text-success fw-bold">Ajout de séances</span>
                             <span class="badge bg-success">+{{ event['nombre'] }}</span>
-                        {% elif event['action'] == 'CREATION_COMPTE' %}
+                        {% elif event['action'] == 'NEW_ACCOUNT' %}
                             <span class="text-primary">Création compte</span>
+                        {% elif event['action'] == 'PRESENCE_VALIDEE' %}
+                            <span class="text-warning">Présence validée</span>
                         {% else %}
                             <span>{{ event['action'] }}</span>
                         {% endif %}
