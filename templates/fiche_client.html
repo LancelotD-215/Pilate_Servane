@@ -14,8 +14,16 @@
                 </div>
                 <div class="col-md-5 text-center border-start">
                     <h6 class="text-uppercase text-muted ls-1">Solde Actuel</h6>
-                    <div class="display-3 fw-bold {{ 'text-success' if client['seances_restantes'] > 0 else 'text-danger' }}">
-                        {{ client['seances_restantes'] }}
+                    <div class="d-flex align-items-center justify-content-center gap-3">
+                        <div class="display-3 fw-bold {{ 'text-success' if client['seances_restantes'] > 0 else 'text-danger' }}">
+                            {{ client['seances_restantes'] }}
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-ajout-rapide-fiche"
+                            data-id="{{ client['id'] }}"
+                            data-prenom="{{ client['prenom'] }}"
+                            data-nom="{{ client['nom'] }}">
+                            +
+                        </button>
                     </div>
                     <span class="badge bg-light text-dark border">Total utilisé : {{ client['total_seances_faites'] }}</span>
                 </div>
@@ -85,4 +93,66 @@
     </div>
 
 </div>
+
+<!-- Modal pour ajout de séances -->
+<div class="modal fade" id="modalAjoutSeanceFiche" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form action="/ajout_seances_rapide" method="POST">
+          
+        <div class="modal-header bg-light">
+          <h5 class="modal-title">Ajouter des séances</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="mb-4 text-center">
+                    <p class="text-center">Ajout de séances pour :</p>
+                    <h3 id="modalClientNomFiche" class="text-primary fw-bold mb-0"></h3>
+            </div>
+          
+          <input type="hidden" name="client_id" id="inputClientIdFiche">
+          <input type="hidden" name="origine" value="fiche_client">
+
+          <hr>
+
+          <div class="mb-3">
+            <label class="form-label">Nombre de séances à ajouter</label>
+            <input type="number" class="form-control form-control-lg text-center" name="seances_ajoutees" value="5" min="1" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Valider</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    // Script pour gérer le bouton d'ajout de séances dans la fiche client
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // Gestion du clic sur le bouton ajout de séances
+        $(document).on('click', '.btn-ajout-rapide-fiche', function () {
+            
+            // 1. On récupère les infos
+            var id = $(this).data('id');
+            var prenom = $(this).data('prenom');
+            var nom = $(this).data('nom');
+
+            // 2. On remplit la modale
+            $('#inputClientIdFiche').val(id);
+            $('#modalClientNomFiche').text(prenom + ' ' + nom);
+
+            // 3. On affiche la modale Bootstrap
+            var myModal = new bootstrap.Modal(document.getElementById('modalAjoutSeanceFiche'));
+            myModal.show();
+        });
+    });
+</script>
+
 {% endblock %}

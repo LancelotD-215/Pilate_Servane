@@ -305,11 +305,13 @@ def ajout_seances_rapide():
         connection.commit() 
         connection.close()
 
-        # renvoie l'utilisateur vers la page de gestion des clients
-        # selon l'origine du formulaire
+        # renvoie l'utilisateur vers la page appropriée selon l'origine du formulaire
         if origine == 'index':
             # Si le formulaire contenait <input name="origine" value="index">
             return redirect(url_for('index'))
+        elif origine == 'fiche_client':
+            # Si le formulaire contenait <input name="origine" value="fiche_client">
+            return redirect(url_for('fiche_client', client_id=client_id))
         else:
             # Sinon (comportement par défaut pour la page gestion_clients)
             return redirect(url_for('gestion_clients'))
