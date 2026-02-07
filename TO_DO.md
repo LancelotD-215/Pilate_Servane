@@ -33,6 +33,7 @@
 - [X] Ajouter fonction ajout séances dans fiche client
 - [ ] Ajouter fonction modification (ou ajouts) séances habituelles dans fiche client
 - [ ] ajout bouton pour afficher tout l'historique d'un client dans la fiche client
+- [ ] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
 
 ## Vérifications
 - [ ] Vérifier que les séances du mois sont correctes
@@ -45,6 +46,7 @@
 
 ## Personalisations
 - [X] Personnaliser les noms dans les pop up de l'agenda
+- [ ] Modifier l'emplacement du bouton d'ajout de séances dans la fiche client
 
 ## Comprehension du code
 - [ ] Comprendre le code de route de la pop up dans l'agnda 

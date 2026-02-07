@@ -40,7 +40,7 @@
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-outline-info rounded-pill btn-voir-fiche"
                                         data-client-id="{{ client['id'] }}">
-                                    ℹ️
+                                    <i class="fas fa-info-circle"></i>
                                 </button>
                             </td>
                             <td class="text-center">
@@ -48,8 +48,8 @@
                                 data-id="{{ client['id'] }}"
                                 data-prenom="{{ client['prenom'] }}"
                                 data-nom="{{ client['nom'] }}">
-                                    ➕
-                                 </button>
+                                    <i class="fas fa-plus-circle"></i>
+                                </button>
                            </td>
                         </tr>
                         {% endfor %} <!-- Fin de la boucle sur les clients -->

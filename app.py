@@ -398,7 +398,7 @@ def fiche_client(client_id):
 
     # récupération des habitudes du client
     habitudes = connection.execute('''
-        SELECT s.jour_semaine, s.heure_debut, s.type_seance 
+        SELECT s.id, s.jour_semaine, s.heure_debut, s.type_seance 
         FROM habitudes h
         JOIN semaine_type s ON h.creneau_id = s.id
         WHERE h.client_id = ?
@@ -413,6 +413,14 @@ def fiche_client(client_id):
         LIMIT 10
     ''', (client_id,)).fetchall()
 
+    # récupération des tous les créneaux pour la modale
+    creneaux = connection.execute('''
+        SELECT id, jour_semaine, heure_debut, type_seance 
+        FROM semaine_type 
+        WHERE actif = 1 
+        ORDER BY jour_semaine, heure_debut
+    ''').fetchall()
+
     # fermeture de la connexion à la base de données
     connection.close()
 
@@ -421,10 +429,11 @@ def fiche_client(client_id):
 
     # envoi des données à la page HTML fiche_client.html
     return render_template('fiche_client.html', 
-                           client=client, 
-                           habitudes=habitudes, 
-                           historique=historique,
-                           jours=jours_semaine)
+                            client=client, 
+                            habitudes=habitudes, 
+                            historique=historique,
+                            creneaux=creneaux,
+                            jours=jours_semaine)
 
 
 
@@ -632,6 +641,41 @@ def marquer_presence():
 
     # On recharge la page planning (on essaie de rester sur la même semaine si possible)
     return redirect(request.referrer or url_for('planning'))
+
+
+
+@app.route('/modif_inscriptions', methods=['POST'])
+def modif_inscriptions():
+    """
+    Fonction exécutée lors de l'accès à la page '/modif_inscriptions'.
+    Args:
+        None
+    Returns:
+        str: redirection vers la page de gestion des clients.
+    """
+    # connexion à la base de données
+    connection = get_db_connection()
+    
+    if request.method == "POST":
+        # récupération des données du formulaire
+        client_id = int(request.form['client_id'])
+        nouveaux_creneaux = request.form.getlist('creneaux')
+
+        # 1. On nettoie les anciennes habitudes
+        connection.execute('DELETE FROM habitudes WHERE client_id = ?', (client_id,))
+
+        # 2. On ajoute les nouvelles
+        for creneau_id in nouveaux_creneaux:
+            connection.execute('INSERT INTO habitudes (client_id, creneau_id) VALUES (?, ?)', 
+                            (client_id, creneau_id))
+        
+        # commit des changements
+        connection.commit()
+        connection.close()
+        
+        return redirect(url_for('fiche_client', client_id=client_id))
+        
+
 
 # lancement de l'application Flask
 if __name__ == '__main__':

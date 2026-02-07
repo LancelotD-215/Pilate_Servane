@@ -8,9 +8,9 @@
             <div class="row align-items-center">
                 <div class="col-md-7">
                     <h1 class="display-5 fw-bold text-primary">{{ client['prenom'] }} {{ client['nom'] }}</h1>
-                    <p class="text-muted mb-1">📆 Inscrit(e) le : {{ client['date_inscription'] }}</p>
-                    <p class="text-muted mb-1">✉️ Email : {{ client['email'] or 'Non renseigné' }}</p>
-                    <p class="text-muted mb-0">📞 Tél : {{ client['telephone'] or 'Non renseigné' }}</p>
+                    <p class="text-muted mb-1"><i class="far fa-calendar"></i> Inscrit(e) le : {{ client['date_inscription'] }}</p>
+                    <p class="text-muted mb-1"><i class="fas fa-at"></i> Email : {{ client['email'] or 'Non renseigné' }}</p>
+                    <p class="text-muted mb-0"><i class="fas fa-phone"></i> Tél : {{ client['telephone'] or 'Non renseigné' }}</p>
                 </div>
                 <div class="col-md-5 text-center border-start">
                     <h6 class="text-uppercase text-muted ls-1">Solde Actuel</h6>
@@ -22,7 +22,7 @@
                             data-id="{{ client['id'] }}"
                             data-prenom="{{ client['prenom'] }}"
                             data-nom="{{ client['nom'] }}">
-                            +
+                                <i class="fas fa-plus"></i>
                         </button>
                     </div>
                     <span class="badge bg-light text-dark border">Total utilisé : {{ client['total_seances_faites'] }}</span>
@@ -35,7 +35,16 @@
         <div class="col-md-6 mb-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Séances Habituelles</h5>
+                    {% if habitudes %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Séances Habituelles</h5>
+                            <button type="button" class="btn btn-sm btn-outline-light shadow-sm btn-modif-inscriptions" id="editHabitudesBtn">
+                                <i class="fas fa-pen-to-square"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        <h5 class="mb-0">Séances Habituelles</h5>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if habitudes %}
@@ -49,10 +58,7 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-muted text-center py-3">Aucune habitude définie.</p>
-                        <div class="text-center">
-                            <small>Vous pourrez ajouter une habitude ici prochainement.</small>
-                        </div>
+                        <p class="text-muted text-center py-3">Aucune inscription a une séance.</p>
                     {% endif %}
                 </div>
             </div>
@@ -141,6 +147,45 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalmodif-inscriptions" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form action="/modif_inscriptions" method="POST">
+          
+        <div class="modal-header bg-light">
+          <h5 class="modal-title">Modifier les inscriptions</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body">         
+            <input type="hidden" name="client_id" value="{{ client['id'] }}">
+            
+            <p class="small text-muted">Cochez les séances auxquelles le client participe chaque semaine :</p>
+
+            <div class="list-group">
+                {% for creneau in creneaux %}
+                <label class="list-group-item d-flex gap-3">
+                    <input class="form-check-input flex-shrink-0" type="checkbox" name="creneaux" value="{{ creneau['id'] }}"
+                        {% for h in habitudes %}{% if h['id'] == creneau['id'] %}checked{% endif %}{% endfor %}>
+                    <span>
+                        <strong>{{ jours[creneau['jour_semaine']] }}</strong> - {{ creneau['heure_debut'] }}
+                        <small class="d-block text-muted">{{ creneau['type_seance'] }}</small>
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Valider</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
     // Script pour gérer le bouton d'ajout de séances dans la fiche client
     document.addEventListener("DOMContentLoaded", function() {
@@ -159,6 +204,11 @@
 
             // 3. On affiche la modale Bootstrap
             var myModal = new bootstrap.Modal(document.getElementById('modalAjoutSeanceFiche'));
+            myModal.show();
+        });
+
+        $(document).on('click', '#editHabitudesBtn', function () {
+            var myModal = new bootstrap.Modal(document.getElementById('modalmodif-inscriptions'));
             myModal.show();
         });
     });
