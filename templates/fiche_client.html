@@ -66,20 +66,27 @@
                 <ul class="list-group list-group-flush">
                     {% for event in historique %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <small class="text-muted">{{ event['date_heure'] }}</small>
+                        <small class="text-muted">{{ event['date_heure'] | format_datetime }}</small>
                         
                         {% if event['action'] == 'CHECK-IN' %}
                             <span class="text-dark">Séance effectuée</span>
-                            <span class="badge bg-light text-dark border">-1</span>
+                            <span class="badge bg-light text-dark border">{{ event['nombre'] }}</span>
                         {% elif event['action'] == 'ADD_SEANCES' %}
                             <span class="text-success fw-bold">Ajout de séances</span>
                             <span class="badge bg-success">+{{ event['nombre'] }}</span>
                         {% elif event['action'] == 'NEW_ACCOUNT' %}
-                            <span class="text-primary">Création compte</span>
+                            <span class="text-primary fw-bold">Création compte</span>
+                            <span class="badge bg-success">+{{ event['nombre'] }}</span>
                         {% elif event['action'] == 'PRESENCE_VALIDEE' %}
                             <span class="text-warning">Présence validée</span>
+                            <span class="badge bg-light text-dark border">{{ event['nombre'] }}</span>
+                        <!-- A enlever quand correction simul bd -->
+                        {% elif event['action'] == 'CREATION_COMPTE' %}
+                            <span class="text-primary fw-bold">Création compte</span>
+                            <span class="badge bg-success">+{{ event['nombre'] }}</span>
                         {% else %}
                             <span>{{ event['action'] }}</span>
+                            <span class="badge bg-secondary">{{ event['nombre'] }}</span>
                         {% endif %}
                     </li>
                     {% else %}

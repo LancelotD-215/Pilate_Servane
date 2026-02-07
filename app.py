@@ -18,6 +18,33 @@ app = Flask(__name__) # création du site web
 
 
 
+@app.template_filter('format_datetime')
+def format_datetime(value, format="%d/%m/%Y à %H:%M"):
+    """Filtre Jinja pour formater les dates proprement."""
+    if value is None:
+        return ""
+    
+    # Si c'est déjà un objet datetime, on formate direct
+    if isinstance(value, datetime):
+        return value.strftime(format)
+    
+    # Si c'est une string (ex: venant de SQLite), on essaie de la parser
+    try:
+        # On nettoie le 'T' éventuel et les microsecondes
+        value = value.replace('T', ' ').split('.')[0]
+        dt = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+        return dt.strftime(format)
+    except ValueError:
+        # Si ça ne marche pas (ex: format date seul YYYY-MM-DD), on essaie juste la date
+        try:
+            dt = datetime.strptime(value, '%Y-%m-%d')
+            return dt.strftime('%d/%m/%Y')
+        except ValueError:
+            return value # On renvoie tel quel si on n'y arrive pas
+
+
+
+
 # création des routes pour le site web (pages)
 @app.route('/')
 def index():
@@ -375,22 +402,13 @@ def fiche_client(client_id):
     ''', (client_id,)).fetchall()
 
     # récupération de l'historique des séances du client (10 dernières actions)
-    historique_raw = connection.execute('''
+    historique = connection.execute('''
         SELECT date_heure, action, nombre 
         FROM historique_seances 
         WHERE client_id = ? 
         ORDER BY date_heure DESC 
         LIMIT 10
     ''', (client_id,)).fetchall()
-
-    # formatage des dates pour l'affichage (suppression du "T" ISO)
-    historique = []
-    for entry in historique_raw:
-        historique.append({
-            'date_heure': entry['date_heure'].replace('T', ' '),
-            'action': entry['action'],
-            'nombre': entry['nombre']
-        })
 
     # fermeture de la connexion à la base de données
     connection.close()

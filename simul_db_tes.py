@@ -116,7 +116,7 @@ def main():
         conn.execute('''
             INSERT INTO historique_seances (client_id, action, nombre, date_heure) 
             VALUES (?, ?, ?, ?)
-        ''', (client_id, 'CREATION_COMPTE', 10, current_date.strftime('%Y-%m-%d %H:%M:%S')))
+        ''', (client_id, 'NEW_ACCOUNT', 10, current_date.strftime('%Y-%m-%d %H:%M:%S')))
 
         while True:
             jours_ecoules = random.randint(2, 14) 
