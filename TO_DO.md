@@ -21,7 +21,7 @@
 ## correctifs divers
 - [X] corriger le nombre de cours du mois dans le widget
 - [X] corriger les couleurs dans gestion client des séances
-- [ ] corriger le nom dans l'historique dans la fiche client (NEW_ACCOUNT -> Création du compte)
+- [X] corriger le nom dans l'historique dans la fiche client (NEW_ACCOUNT -> Création du compte)
 - [ ] corriger la plage horaire de présence pour valider a +10 minutes et -10 minutes de la séance
 
 ## Implémentation autre
