@@ -26,6 +26,7 @@
 - [X] corriger la bonne heure
 - [ ] corriger l'affichage des séances habituelles dans la fiche client
 - [ ] corriger l'heure pour ne pas avoir de faille en changeant l'heure de son telephone
+- [ ] corriger l'affichage jusqu'à 20h dans l'agenda
 
 ## Implémentation autre
 - [X] supprimer client habituel 4 semaines

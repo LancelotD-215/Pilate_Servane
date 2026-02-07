@@ -152,6 +152,18 @@ def main():
         
         clients_generes += 1
 
+    # création de client a solde 0 pour tester les alertes
+    conn.execute('''
+        INSERT INTO clients (prenom, nom, seances_restantes, date_inscription, email, telephone, total_seances_faites) 
+        VALUES (?, ?, ?, ?, ?, ?, 0)
+    ''', ('Lancelot', 'Danesse', 0, DATE_DEBUT.strftime('%Y-%m-%d'), 'lancelot.12@example.com', '1212121212'))
+
+    # création de client a solde -1 pour tester les alertes
+    conn.execute('''
+        INSERT INTO clients (prenom, nom, seances_restantes, date_inscription, email, telephone, total_seances_faites) 
+        VALUES (?, ?, ?, ?, ?, ?, 0)
+    ''', ('Juliette', 'Bouriant', -1, DATE_DEBUT.strftime('%Y-%m-%d'), 'juliette.14@example.com', '1010101010'))
+
     conn.commit()
     conn.close()
     print("\n✅ TERMINÉ ! Base de test prête.")
