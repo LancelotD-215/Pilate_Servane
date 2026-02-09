@@ -10,7 +10,7 @@ date : 2026/01/20
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime, timedelta
-from app_lib import get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients, get_zero_clients
+from app_lib import client_not_comming, get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients, get_zero_clients
 
 # création de l'application Flask
 app = Flask(__name__) # création du site web
@@ -66,7 +66,8 @@ def index():
         'best_client_all_time': False,
         'most_remaining': True,
         'total_clients': True,
-        'seances_month': True
+        'seances_month': True,
+        'client_not_comming' : True
     }
 
     # initialisation des données des widgets
@@ -76,6 +77,7 @@ def index():
     client_most_remaining = None
     total_clients = None
     number_seances_month = None
+    clients_not_coming = None
 
     # récupération des variables
     actual_date = datetime.now().strftime('%Y-%m-%d')
@@ -96,20 +98,23 @@ def index():
         total_clients = connection.execute('SELECT COUNT(*) AS total FROM clients').fetchone()['total']
     if widgets_config['seances_month']:
         number_seances_month = get_number_seances(first_day_of_month, actual_date) # du mois courant
-
+    if widgets_config['client_not_comming']:
+        clients_not_coming = client_not_comming((datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d'), actual_date)
 
     # fermeture de la connexion à la base de données
     connection.close()
 
     # envoi des données à la page HTML index.html
     return render_template('index.html', 
-                           widgets=widgets_config,
-                           negative_clients=negative_clients,
-                           zero_clients=zero_clients,
-                           best_clients_month=best_clients_month,  
-                           client_most_remaining=client_most_remaining, 
-                           total_clients=total_clients, 
-                           number_seances_month=number_seances_month)
+                            widgets=widgets_config,
+                            negative_clients=negative_clients,
+                            zero_clients=zero_clients,
+                            best_clients_month=best_clients_month,  
+                            client_most_remaining=client_most_remaining, 
+                            total_clients=total_clients, 
+                            number_seances_month=number_seances_month,
+                            clients_not_coming=clients_not_coming
+                           )
 
 
 @app.route('/gestion_clients')

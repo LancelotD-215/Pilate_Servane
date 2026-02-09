@@ -192,3 +192,29 @@ def get_zero_clients():
     results = connection.execute(query).fetchall()
     connection.close()
     return results
+
+
+def client_not_comming(since_date, until_date):
+    """
+    Fonction pour récupérer la liste des clients qui n'ont pas utilisé de séances depuis une date donnée.
+    Args:
+        since_date (str): date au format 'YYYY-MM-DD' pour filtrer le début des actions.
+        until_date (str): date au format 'YYYY-MM-DD' pour filtrer la fin des actions.
+    Returns:
+        list: liste des clients qui n'ont pas utilisé de séances dans la période donnée.
+    """
+    connection = get_db_connection()
+
+    query = """
+        SELECT c.id, c.prenom, c.nom
+        FROM clients c
+        LEFT JOIN historique_seances h ON c.id = h.client_id 
+            AND h.action IN ('CHECK-IN', 'PRESENCE_VALIDEE') 
+            AND DATE(h.date_heure) BETWEEN ? AND ?
+        WHERE h.id IS NULL
+        ORDER BY c.nom ASC, c.prenom ASC
+    """
+
+    results = connection.execute(query, (since_date, until_date)).fetchall()
+    connection.close()
+    return results

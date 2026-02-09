@@ -32,7 +32,7 @@
 - [X] supprimer client habituel 4 semaines
 - [X] Ajouter séances habituelles dans nouveau client
 - [X] Ajouter fonction ajout séances dans fiche client
-- [ ] Ajouter fonction modification (ou ajouts) séances habituelles dans fiche client
+- [X] Ajouter fonction modification (ou ajouts) séances habituelles dans fiche client
 - [ ] ajout bouton pour afficher tout l'historique d'un client dans la fiche client
 - [ ] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
 
@@ -43,7 +43,7 @@
 - [ ] Ajouter un calendrier pour choisir les séances habituelles dans nouveau clients
 - [ ] Ajouter une section commantaires dans l'agenda
 - [ ] Ajouter une colonne dernière séance dans la gestion client
-- [ ] Rectifier habitude en inscrit
+- [ ] Rectifier habitude en inscrit (code)
 
 ## Personalisations
 - [X] Personnaliser les noms dans les pop up de l'agenda
