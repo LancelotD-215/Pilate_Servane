@@ -27,7 +27,7 @@
 - [x] corriger la plage horaire de présence pour valider a -30 min avant la séance
 - [x] corriger la bonne heure
 - [ ] corriger l'affichage des séances habituelles dans la fiche client
-- [ ] corriger l'heure pour ne pas avoir de faille en changeant l'heure de son telephone
+- [x] corriger l'heure pour ne pas avoir de faille en changeant l'heure de son telephone
 - [x] corriger l'affichage jusqu'à 20h dans l'agenda
 
 ## Implémentation autre

@@ -11,11 +11,13 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime, timedelta
 from app_lib import client_not_comming, get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients, get_zero_clients
+import pytz
 
 # création de l'application Flask
 app = Flask(__name__) # création du site web
 
-
+# récupération de l'heure de paris
+paris_tz = pytz.timezone('Europe/Paris')
 
 
 @app.template_filter('format_datetime')
@@ -80,7 +82,7 @@ def index():
     clients_not_coming = None
 
     # récupération des variables
-    actual_date = datetime.now().strftime('%Y-%m-%d')
+    actual_date = datetime.now(paris_tz).strftime('%Y-%m-%d')
     first_day_of_month = actual_date[:8] + '01' # premier jour du mois courant
 
     # création des données pour les widgets
@@ -99,7 +101,7 @@ def index():
     if widgets_config['seances_month']:
         number_seances_month = get_number_seances(first_day_of_month, actual_date) # du mois courant
     if widgets_config['client_not_comming']:
-        clients_not_coming = client_not_comming((datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d'), actual_date)
+        clients_not_coming = client_not_comming((datetime.now(paris_tz) - timedelta(days=30)).strftime('%Y-%m-%d'), actual_date)
 
     # fermeture de la connexion à la base de données
     connection.close()
@@ -163,7 +165,7 @@ def presence():
         nom = nom.strip().title() 
 
         # récuperation de l'heure actuelle à Paris
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now(paris_tz).strftime('%Y-%m-%d %H:%M:%S')
 
         # recherche du client dans la base de données
         client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
@@ -238,8 +240,10 @@ def ajout_client():
             # récupération de l'ID du nouveau client
             nouveau_client_id = curseur.lastrowid
 
+            current_time = datetime.now(paris_tz).strftime('%Y-%m-%d %H:%M:%S')
+
             # ajout dans historique seances
-            connection.execute('INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)',(nouveau_client_id, 'NEW_ACCOUNT', seances_initiales))
+            connection.execute('INSERT INTO historique_seances (client_id, action, nombre, date_heure) VALUES (?, ?, ?, ?)',(nouveau_client_id, 'NEW_ACCOUNT', seances_initiales, current_time))
 
             # ajout des habitudes si un créneau a été sélectionné
             if creneau:
@@ -292,8 +296,10 @@ def ajout_seances():
             # mise à jour du nombre de séances restantes pour le client
             connection.execute('UPDATE clients SET seances_restantes = seances_restantes + ? WHERE id = ?', (seances_ajoutees, client_id))
 
+            current_time = datetime.now(paris_tz).strftime('%Y-%m-%d %H:%M:%S')
+
             # ajout dans historique seances
-            connection.execute('INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)', (client_id, "ADD_SEANCES", seances_ajoutees))
+            connection.execute('INSERT INTO historique_seances (client_id, action, nombre, date_heure) VALUES (?, ?, ?, ?)', (client_id, "ADD_SEANCES", seances_ajoutees, current_time))
 
             # commit des changements
             connection.commit() 
@@ -327,11 +333,14 @@ def ajout_seances_rapide():
         client_id = int(request.form['client_id'])
         seances_ajoutees = int(request.form['seances_ajoutees'])
 
+        # récupération de l'heure de paris 
+        current_time = datetime.now(paris_tz).strftime('%Y-%m-%d %H:%M:%S')
+
         # mise à jour du nombre de séances restantes pour le client
         connection.execute('UPDATE clients SET seances_restantes = seances_restantes + ? WHERE id = ?', (seances_ajoutees, client_id))
 
         # ajout dans historique seances
-        connection.execute('INSERT INTO historique_seances (client_id, action, nombre) VALUES (?, ?, ?)', (client_id, "ADD_SEANCES", seances_ajoutees))
+        connection.execute('INSERT INTO historique_seances (client_id, action, nombre, date_heure) VALUES (?, ?, ?, ?)', (client_id, "ADD_SEANCES", seances_ajoutees, current_time))
 
         # récupération de l'origine de la requête
         origine = request.form.get('origine')
@@ -458,7 +467,7 @@ def planning():
         offset = 0
 
     # calcul des dates de début et de fin de la semaine à afficher
-    today = datetime.now()
+    today = datetime.now(paris_tz)
     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
     end_of_week = start_of_week + timedelta(days=4)
     
@@ -696,7 +705,7 @@ def borne():
     if request.method == "POST":
         prenom = request.form['prenom'].strip().title()
         nom = request.form['nom'].strip().title()
-        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_time = datetime.now(paris_tz).strftime('%Y-%m-%d %H:%M:%S')
 
         client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
         
