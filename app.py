@@ -527,8 +527,8 @@ def planning():
         presences_map[key].append(p_date.strftime('%H:%M')) # On stocke l'heure du pointage
 
     # ... (Constantes HEURE_DEBUT, etc. inchangées) ...
-    HEURE_DEBUT = 8
-    HEURE_FIN = 20
+    HEURE_DEBUT = 9
+    HEURE_FIN = 21
     DUREE_TOTAL_MINUTES = (HEURE_FIN - HEURE_DEBUT) * 60
     heure_affichage = [f"{h:02d}:00" for h in range(HEURE_DEBUT, HEURE_FIN + 1)]
 
