@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Succès</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #d4edda; display: flex; align-items: center; height: 100vh; }
+    </style>
+</head>
+<body class="text-center">
+    <div class="container">
+        <div class="display-1 text-success mb-4">✅</div>
+        <h1 class="fw-bold">Présence validée !</h1>
+        <p class="fs-4">Merci {{ prenom }}, bonne séance !</p>
+        <div class="alert alert-info d-inline-block mt-3 px-5">
+            Il vous reste <strong>{{ solde }}</strong> séances.
+        </div>
+    </div>
+</body>
+</html>

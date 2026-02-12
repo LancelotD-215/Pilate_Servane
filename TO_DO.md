@@ -18,6 +18,7 @@
 - [ ] Ajouter widget bouton pour choix des widgets à afficher
 - [x] Ajouter widget client pas venus depuis 1 mois
 - [x] Ajouter widget personnes a zero séances
+- [ ] Ajout séance en cours dans le widget
 
 ## correctifs divers
 - [x] corriger le nombre de cours du mois dans le widget
@@ -36,6 +37,7 @@
 - [x] Ajouter fonction modification (ou ajouts) séances habituelles dans fiche client
 - [ ] ajout bouton pour afficher tout l'historique d'un client dans la fiche client
 - [ ] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
+- [ ] ajout nombre de séances restantes dans après check in
 
 ## Vérifications
 - [ ] Vérifier que les séances du mois sont correctes

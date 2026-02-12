@@ -682,6 +682,49 @@ def modif_inscriptions():
         
 
 
+
+@app.route('/borne', methods=['GET', 'POST'])
+def borne():
+    """
+    Fonction exécutée lors de l'accès à la page '/borne'. 
+    Args: 
+        None 
+    Returns: 
+        str: rendu HTML de la page de la borne de check-in. """
+    connection = get_db_connection()
+    
+    if request.method == "POST":
+        prenom = request.form['prenom'].strip().title()
+        nom = request.form['nom'].strip().title()
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
+        
+        if client:
+            # Calcul du nouveau solde
+            nouveau_solde = client['seances_restantes'] - 1
+            client_id = client['id']
+
+            # Mise à jour
+            connection.execute('UPDATE clients SET seances_restantes = ?, total_seances_faites = total_seances_faites + 1 WHERE id = ?', (nouveau_solde, client_id))
+            connection.execute('INSERT INTO historique_seances (client_id, action, nombre, date_heure) VALUES (?, ?, ?, ?)', (client_id, "CHECK-IN", -1, current_time))
+            connection.commit()
+            connection.close()
+
+            # On renvoie vers une page de succès avec les infos
+            return render_template('borne_succes.html', prenom=prenom, solde=nouveau_solde)
+        
+        else:
+            connection.close()
+            return render_template('borne.html', erreur=f"Client '{prenom} {nom}' non trouvé.")
+
+    # Affichage du formulaire vide
+    connection.close()
+    return render_template('borne.html')
+
+
+
+
 # lancement de l'application Flask
 if __name__ == '__main__':
     app.run(debug=True)
