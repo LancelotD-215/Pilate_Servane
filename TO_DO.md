@@ -13,6 +13,7 @@
   - [ ] Ajouter des séances dans l'agenda de manière definitive
   - [ ] Supprimer des séances dans l'agenda de manière ponctuelle
   - [ ] Supprimer des séances dans l'agenda de manière definitive
+- [ ] Ajout client non inscrit dans séances
 
 ## Implémentation des widgets
 - [ ] Ajouter widget bouton pour choix des widgets à afficher
@@ -36,7 +37,7 @@
 - [x] Ajouter fonction ajout séances dans fiche client
 - [x] Ajouter fonction modification (ou ajouts) séances habituelles dans fiche client
 - [ ] ajout bouton pour afficher tout l'historique d'un client dans la fiche client
-- [ ] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
+- [x] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
 - [ ] ajout nombre de séances restantes dans après check in
 
 ## Vérifications
@@ -47,6 +48,7 @@
 - [ ] Ajouter une section commantaires dans l'agenda
 - [ ] Ajouter une colonne dernière séance dans la gestion client
 - [ ] Rectifier habitude en inscrit (code)
+- [ ] présence prévue dans agenda
 
 ## Personalisations
 - [x] Personnaliser les noms dans les pop up de l'agenda
