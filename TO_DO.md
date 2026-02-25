@@ -1,7 +1,7 @@
 # Principale
 
 ## Implémentation de la base de données
-- [ ] Ajouter la base de données déja existante
+- [x] Ajouter la base de données déja existante
 
 ## Implémentation de l'agenda
 - [x] Créer la page calendrier
@@ -39,6 +39,7 @@
 - [ ] ajout bouton pour afficher tout l'historique d'un client dans la fiche client
 - [x] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
 - [ ] ajout nombre de séances restantes dans après check in
+- [ ] ajout de suppression client
 
 ## Vérifications
 - [ ] Vérifier que les séances du mois sont correctes

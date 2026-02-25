@@ -8,7 +8,7 @@ date : 2026/01/20
 
 # imports des modules
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 from datetime import datetime, timedelta
 from app_lib import client_not_comming, get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients, get_zero_clients
 import pytz
@@ -702,17 +702,29 @@ def borne():
         str: rendu HTML de la page de la borne de check-in. """
     connection = get_db_connection()
     
-    if request.method == "POST":
-        prenom = request.form['prenom'].strip().title()
-        nom = request.form['nom'].strip().title()
-        current_time = datetime.now(paris_tz).strftime('%Y-%m-%d %H:%M:%S')
+    # récupération des cookies pour pré-remplir le formulaire si disponibles
+    id_cookie = request.cookies.get('borne_id')
+    prenom_cookie = request.cookies.get('borne_prenom')
+    nom_cookie = request.cookies.get('borne_nom')
 
-        client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
+    if request.method == "POST":
+        client_id = request.form.get('client_id')
+        if client_id:
+            # validation rapide
+            client = connection.execute('SELECT * FROM clients WHERE id = ?', (client_id,)).fetchone()
+        else :
+            # validation manuelle
+            prenom = request.form['prenom'].strip().title()
+            nom = request.form['nom'].strip().title()
+            client = connection.execute('SELECT * FROM clients WHERE prenom = ? AND nom = ?', (prenom, nom)).fetchone()
         
         if client:
             # Calcul du nouveau solde
             nouveau_solde = client['seances_restantes'] - 1
             client_id = client['id']
+            prenom = client['prenom']
+            nom = client['nom']
+            current_time = datetime.now(paris_tz).strftime('%Y-%m-%d %H:%M:%S')
 
             # Mise à jour
             connection.execute('UPDATE clients SET seances_restantes = ?, total_seances_faites = total_seances_faites + 1 WHERE id = ?', (nouveau_solde, client_id))
@@ -720,16 +732,33 @@ def borne():
             connection.commit()
             connection.close()
 
+            # gestion des cookies
+            response = make_response(render_template('borne_succes.html', prenom=prenom, solde=nouveau_solde))
+
+            # on enregistre le cookis pour 60 jours
+            max_age = 60 * 24 * 60 * 60 # 60 jours en secondes
+            response.set_cookie('borne_id', str(client_id), max_age=max_age)
+            response.set_cookie('borne_prenom', prenom, max_age=max_age)
+            response.set_cookie('borne_nom', nom, max_age=max_age)
+
             # On renvoie vers une page de succès avec les infos
-            return render_template('borne_succes.html', prenom=prenom, solde=nouveau_solde)
+            return response
         
         else:
             connection.close()
-            return render_template('borne.html', erreur=f"Client '{prenom} {nom}' non trouvé.")
+            # On renvoie l'erreur ET les infos du cookie pour que la pop-up puisse se ré-ouvrir
+            return render_template('borne.html', 
+                                erreur="Client non trouvé.",
+                                id_cookie=id_cookie, 
+                                prenom_cookie=prenom_cookie, 
+                                nom_cookie=nom_cookie)
 
     # Affichage du formulaire vide
     connection.close()
-    return render_template('borne.html')
+    return render_template('borne.html',
+                           id_cookie=id_cookie,
+                           prenom_cookie=prenom_cookie,
+                           nom_cookie=nom_cookie)
 
 
 
