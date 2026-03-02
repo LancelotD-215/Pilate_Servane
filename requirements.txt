@@ -1,0 +1,11 @@
+# Requirements pour l'application de gestion des clients Pilates
+# Généré le 2026-03-02
+
+# Framework web principal
+Flask==3.1.3
+
+# Gestion des fuseaux horaires (timezone Paris)
+pytz==2025.2
+
+# Note: Les modules sqlite3, datetime, csv et locale font partie 
+# de la bibliothèque standard Python et n'ont pas besoin d'être installés

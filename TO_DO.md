@@ -40,6 +40,7 @@
 - [x] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
 - [ ] ajout nombre de séances restantes dans après check in
 - [ ] ajout de suppression client
+- [x] implémentation des cookis clients 
 
 ## Vérifications
 - [ ] Vérifier que les séances du mois sont correctes
