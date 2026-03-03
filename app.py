@@ -15,6 +15,7 @@ import pytz
 
 # création de l'application Flask
 app = Flask(__name__) # création du site web
+app.config['SECRET_KEY'] = 'xcbxf0xfaZxedxb29xbaxdcx19xccxf2x11x01xcc2x13xff7x94px14xf1'
 
 # récupération de l'heure de paris
 paris_tz = pytz.timezone('Europe/Paris')
@@ -765,4 +766,4 @@ def borne():
 
 # lancement de l'application Flask
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
