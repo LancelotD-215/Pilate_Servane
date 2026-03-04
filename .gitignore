@@ -18,3 +18,9 @@ out/
 ngrok.exe
 
 .venv/
+
+# Ignorer les fichiers de base de données pour ne pas faire de conflit ou écraser les données de production
+*.db
+
+# Ignorer les fichiers temporaire
+__pycache__/
