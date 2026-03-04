@@ -44,6 +44,18 @@ body {
     border-color: var(--pink-logo-hover) !important;
 }
 
+/* Pour les boutons outline-primary */
+.btn-outline-pink-logo {
+    color: var(--pink-logo) !important;
+    border-color: var(--pink-logo) !important;
+}
+
+.btn-outline-pink-logo:hover {
+    color: #fff !important;
+    background-color: var(--pink-logo) !important;
+    border-color: var(--pink-logo) !important;
+}
+
 .btn-green-calendar {
     background-color: var(--green-calendar) !important;
     border-color: var(--green-calendar) !important;
@@ -64,6 +76,10 @@ body {
     border-color: var(--blue-calendar-hover) !important;
 }
 
+.bg-blue-calendar {
+    background-color: var(--blue-calendar) !important;
+}
+
 .btn-purple-calendar {
     background-color: var(--purple-calendar) !important;
     border-color: var(--purple-calendar) !important;
@@ -82,6 +98,20 @@ body {
 .btn-brown-calendar:hover {
     background-color: var(--brown-calendar-hover) !important;
     border-color: var(--brown-calendar-hover) !important;
+}
+
+.btn-darkblue-calendar {
+    background-color: var(--darkblue-calendar) !important;
+    border-color: var(--darkblue-calendar) !important;
+}
+
+.btn-darkblue-calendar:hover {
+    background-color: var(--darkblue-calendar-hover) !important;
+    border-color: var(--darkblue-calendar-hover) !important;
+}
+
+.bg-darkblue-calendar {
+    background-color: var(--darkblue-calendar) !important;
 }
 
 /* 3. Remplacer le fond des éléments bg-primary (ex: ta barre de navigation) */

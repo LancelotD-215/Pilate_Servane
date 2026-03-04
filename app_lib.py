@@ -16,7 +16,7 @@ import os
 # On récupère le chemin du dossier où se trouve ce fichier
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # On crée le chemin complet vers la base de données
-DB_PATH = os.path.join(BASE_DIR, "database_clients.db")
+DB_PATH = os.path.join(BASE_DIR, "database_clients_test.db")
 
 # création des fonctions utilitaires
 def get_db_connection():

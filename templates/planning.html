@@ -106,10 +106,10 @@
     }
     /* Style pour le jour actuel */
     .col-jour.is-today {
-        background-color: rgba(13, 110, 253, 0.05) !important; /* Bleu très pâle */
+        background-color: rgba(219, 112, 147, 0.05) !important; /* Rose très pâle */
     }
     .header-jour.is-today {
-        color: #0d6efd !important;
+        color: var(--pink-logo) !important;
     }
 </style>
 
@@ -117,7 +117,7 @@
 
     <div class="row align-items-center mb-4">
         <div class="col-3 text-start">
-            <a href="{{ url_for('planning', semaine=offset-1) }}" class="btn btn-outline-primary shadow-sm">
+            <a href="{{ url_for('planning', semaine=offset-1) }}" class="btn btn-outline-pink-logo shadow-sm">
                 &larr; <span class="d-none d-md-inline">Précédent</span>
             </a>
         </div>
@@ -128,7 +128,7 @@
             {% endif %}
         </div>
         <div class="col-3 text-end">
-            <a href="{{ url_for('planning', semaine=offset+1) }}" class="btn btn-outline-primary shadow-sm">
+            <a href="{{ url_for('planning', semaine=offset+1) }}" class="btn btn-outline-pink-logo shadow-sm">
                 <span class="d-none d-md-inline">Suivant</span> &rarr;
             </a>
         </div>
