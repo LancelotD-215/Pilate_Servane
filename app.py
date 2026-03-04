@@ -6,6 +6,8 @@ description : code principal de l'application Flask pour la gestion des clients 
 date : 2026/01/20
 """
 
+# Test de synchronisation sécurisée
+
 # imports des modules
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, make_response
