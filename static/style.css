@@ -1,0 +1,103 @@
+/* Palette de couleurs "Zen" */
+:root {
+    --pink-logo: #cc1e58;
+    --pink-logo-hover: #a71b46;
+
+    --green-calendar: #d9d323;
+    --green-calendar-hover: #a0a81f;
+
+    --blue-calendar: #87e4e5;
+    --blue-calendar-hover: #5bb0b0;
+
+    --purple-calendar: #8960bd;
+    --purple-calendar-hover: #5e3a7f;
+
+    --brown-calendar: #c2711f;
+    --brown-calendar-hover: #854d13;
+
+    --darkblue-calendar: #268385;
+    --darkblue-calendar-hover: #186a6e;
+
+    --darkgrey-background: #322c31;
+
+    --grey-background: #f7f7f7;
+
+    --lightgrey-background: #fcfcfc;
+
+}
+
+body {
+    background-color: var(--grey-background);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--darkgrey-background);
+}
+
+/* 1. Remplacer le bleu des boutons Primary */
+.btn-pink-logo {
+    background-color: var(--pink-logo) !important;
+    border-color: var(--pink-logo) !important;
+}
+
+/* 2. Changer la couleur au survol (hover) */
+.btn-pink-logo:hover {
+    background-color: var(--pink-logo-hover) !important;
+    border-color: var(--pink-logo-hover) !important;
+}
+
+.btn-green-calendar {
+    background-color: var(--green-calendar) !important;
+    border-color: var(--green-calendar) !important;
+}
+
+.btn-green-calendar:hover {
+    background-color: var(--green-calendar-hover) !important;
+    border-color: var(--green-calendar-hover) !important;
+}
+
+.btn-blue-calendar {
+    background-color: var(--blue-calendar) !important;
+    border-color: var(--blue-calendar) !important;
+}
+
+.btn-blue-calendar:hover {
+    background-color: var(--blue-calendar-hover) !important;
+    border-color: var(--blue-calendar-hover) !important;
+}
+
+.btn-purple-calendar {
+    background-color: var(--purple-calendar) !important;
+    border-color: var(--purple-calendar) !important;
+}
+
+.btn-purple-calendar:hover {
+    background-color: var(--purple-calendar-hover) !important;
+    border-color: var(--purple-calendar-hover) !important;
+}
+
+.btn-brown-calendar {
+    background-color: var(--brown-calendar) !important;
+    border-color: var(--brown-calendar) !important;
+}
+
+.btn-brown-calendar:hover {
+    background-color: var(--brown-calendar-hover) !important;
+    border-color: var(--brown-calendar-hover) !important;
+}
+
+/* 3. Remplacer le fond des éléments bg-primary (ex: ta barre de navigation) */
+.bg-grey-background {
+    background-color: var(--grey-background) !important;
+}
+
+.bg-darkgrey-background {
+    background-color: var(--darkgrey-background) !important;
+}
+
+.bg-lightgrey-background {
+    background-color: var(--lightgrey-background) !important;
+}
+
+/* 4. Remplacer le texte primary */
+.text-pink-logo {
+    color: var(--pink-logo) !important;
+}

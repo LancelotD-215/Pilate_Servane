@@ -119,24 +119,6 @@ Projet_Pilate/
     └── style.css            # CSS personnalisé (optionnel)
 ```
 
-## 🚀 6. Fonctionnalités en Développement
-
-### 📋 **Prochaines Étapes**
-- [X] Pop-up détail des séances dans le planning
-- [ ] Widget "clients absents depuis 1 mois"
-- [ ] Configuration dynamique des widgets
-- [X] Ajout de séances depuis la fiche client
-- [ ] Modification des habitudes clients
-- [ ] Historique complet illimité
-
-### 🔮 **Évolutions Futures**
-- [ ] Authentification et gestion des utilisateurs
-- [ ] Statistiques avancées et graphiques
-- [ ] Export PDF des rapports
-- [ ] Notifications automatiques
-- [ ] API REST pour applications mobiles
-- [ ] QR Codes pour check-in automatique
-
 ## ⚙️ 7. Installation et Lancement
 
 ```bash

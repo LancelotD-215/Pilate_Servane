@@ -71,31 +71,31 @@
     
     /* Jaune (Pilates Intermédiaire) */
     .bg-intermediaire {
-        background-color: #d4d700; 
+        background-color: var(--green-calendar); 
         color: #fff; /* ou #333 si tu veux le texte noir */
     }
 
     /* Bleu clair (Pilates Fondamental) */
     .bg-fondamental {
-        background-color: #8be0e0;
+        background-color: var(--blue-calendar);
         color: #fff;
     }
 
     /* Violet (Yoga Doux) */
     .bg-yoga {
-        background-color: #7b68ee; /* MediumSlateBlue */
+        background-color: var(--purple-calendar);
         color: #fff;
     }
 
     /* Orange/Marron (Mobilité) */
     .bg-mobilite {
-        background-color: #c76f18;
+        background-color: var(--brown-calendar);
         color: #fff;
     }
 
     /* Bleu canard/foncé (Pilates Avancé) */
     .bg-avance {
-        background-color: #208e96;
+        background-color: var(--darkblue-calendar);
         color: #fff;
     }
 
@@ -122,7 +122,7 @@
             </a>
         </div>
         <div class="col-6 text-center">
-            <h4 class="fw-bold m-0 text-primary">{{ period_title }}</h4>
+            <h4 class="fw-bold m-0 text-pink-logo">{{ period_title }}</h4>
             {% if offset != 0 %}
                 <a href="{{ url_for('planning') }}" class="badge bg-secondary text-decoration-none mt-1">Revenir à aujourd'hui</a>
             {% endif %}
@@ -193,7 +193,7 @@
       <div class="modal-body">
         
         <div class="mb-4 text-center">
-            <h3 id="modalType" class="text-primary fw-bold mb-0">Type</h3>
+            <h3 id="modalType" class="text-pink-logo fw-bold mb-0">Type</h3>
             <div class="text-muted fs-5">
                 <span id="modalHeure">00:00</span> • <span id="modalDuree">0</span> min
             </div>
