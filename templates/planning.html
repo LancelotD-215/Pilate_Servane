@@ -259,7 +259,7 @@
             // On incrémente
             var newPresent = currentPresent + 1;
             // On remet le texte à jour
-            titleElement.textContent = 'Clients Inscrits (' + newPresent + ' / ' + total + ')';
+            titleElement.textContent = 'Clients Présents (' + newPresent + ' / ' + total + ')';
         }
     }
 
@@ -295,7 +295,7 @@
 
             // Calcul compteur initial
             var presentCount = clients.filter(client => client.present).length;
-            clientsInscritsTitle.textContent = 'Clients Inscrits (' + presentCount + ' / ' + clients.length + ')';
+            clientsInscritsTitle.textContent = 'Clients Présents (' + presentCount + ' / ' + clients.length + ')';
 
             if (clients.length > 0) {
                 noClientsMsg.style.display = 'none';
