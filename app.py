@@ -369,32 +369,36 @@ def ajout_seances_rapide():
 def recherche_client():
     """
     Fonction exécutée lors de l'accès à la page '/recherche_client'.
+    Recherche un client par son nom complet et redirige vers sa fiche.
+    Gère les noms et prénoms composés.
     Args:
         None
     Returns:
         str: rendu HTML de la page de résultats de recherche de client.
     """
     # récupération du terme de recherche depuis les paramètres GET
-    query = request.args.get('q', '').strip().title()
+    query = request.args.get('q', '').strip()
 
-    # découpage en prénom et nom
-    parts = query.split(' ')
-
-    # suppose que le format est "Prénom Nom"
-    prenom_recherche = parts[0].title()
-    nom_recherche = parts[1].title()
-
+    if not query:
+        return redirect(url_for('gestion_clients'))
+    
     # connexion à la base de données
     connection = get_db_connection()
 
-    # recherche des clients correspondant au terme de recherche
-    client = connection.execute('SELECT id FROM clients WHERE prenom = ? AND nom = ?', (prenom_recherche, nom_recherche)).fetchone()
+    client = connection.execute('''
+        SELECT id FROM clients 
+        WHERE (prenom || ' ' || nom) LIKE ? 
+           OR (nom || ' ' || prenom) LIKE ?
+    ''', (query, query)).fetchone()
 
-    # fermeture de la connexion à la base de données
     connection.close()
 
     # envoi des résultats à la page HTML recherche_client.html
-    return redirect(url_for('fiche_client', client_id=client['id']))
+    if client:
+        return redirect(url_for('fiche_client', client_id=client['id']))
+    else:
+        # Si aucun client n'est trouvé, on peut rediriger vers la liste avec un message
+        return "<h1>Client introuvable</h1><p>Désolé, aucun client ne correspond à cette recherche.</p><a href='/gestion_clients'>Retour à la liste</a>"
 
 
 
