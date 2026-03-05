@@ -52,7 +52,7 @@ def get_best_clients(since_date, until_date):
         SELECT c.prenom, c.nom, COUNT(h.id) AS seances_utilisees
         FROM historique_seances h
         JOIN clients c ON h.client_id = c.id
-        WHERE h.action = 'CHECK-IN' 
+        WHERE h.action IN ('CHECK-IN', 'PRESENCE_VALIDEE')
         AND DATE(h.date_heure) BETWEEN ? AND ?
         GROUP BY c.id
         ORDER BY seances_utilisees DESC
@@ -106,7 +106,7 @@ def get_number_seances(since_date, until_date):
     query_checkins = """
         SELECT date_heure
         FROM historique_seances
-        WHERE action = 'CHECK-IN'
+        WHERE action IN ('CHECK-IN', 'PRESENCE_VALIDEE')
         AND DATE(date_heure) BETWEEN ? AND ?
     """
     
