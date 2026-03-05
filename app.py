@@ -772,4 +772,4 @@ def borne():
 
 # lancement de l'application Flask
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
