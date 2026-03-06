@@ -772,4 +772,5 @@ def borne():
 
 # lancement de l'application Flask
 if __name__ == '__main__':
-    app.run()
+    is_local = 'PYTHONANYWHERE_DOMAIN' not in os.environ
+    app.run(debug=is_local)
