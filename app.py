@@ -14,6 +14,7 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 from datetime import datetime, timedelta
 from app_lib import client_not_comming, get_db_connection, get_best_clients, get_client_most_remaining, get_number_seances, get_negative_seances_clients, get_zero_clients
 import pytz
+import os
 
 # création de l'application Flask
 app = Flask(__name__) # création du site web
