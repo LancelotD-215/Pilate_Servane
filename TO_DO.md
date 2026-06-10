@@ -1,5 +1,26 @@
 # Principale
 
+## 🔐 Sécurité / Authentification (EN ATTENTE DU GO de Servane)
+Objectif : protéger l'espace admin par un identifiant + mot de passe.
+La borne (`/borne`) doit RESTER PUBLIQUE (les clients pointent eux-mêmes).
+
+Spécifications définies avec Servane :
+- [ ] Compte unique pour Servane. Elle communiquera son **identifiant** par message.
+- [ ] **Première connexion** : elle saisit le mot de passe de son choix, qui devient
+      son seul et unique mot de passe pour le site (stocké en base, **hashé**, jamais en clair).
+- [ ] Connexions suivantes : identifiant + mot de passe.
+- [ ] Case **"Rester connecté"** : si cochée, utilise un cookie persistant pour la
+      reconnaître automatiquement ; si non cochée, session classique (déconnexion à la fermeture).
+- [ ] Dans `layout.html` : ajouter une **fine barre en bas** avec un bouton
+      **"Se déconnecter"** qui déconnecte ET supprime le cookie "rester connecté".
+- [ ] Protéger toutes les routes admin, laisser `/borne` (et sa page succès) accessibles sans login.
+
+Choix techniques validés :
+- Stockage : table `admin` en base (identifiant pré-enregistré, champ mot de passe
+  vide jusqu'à la 1ère connexion où elle le définit).
+- Hash du mot de passe avec `werkzeug.security` (`generate_password_hash` /
+  `check_password_hash`) — déjà inclus avec Flask, rien à installer.
+
 ## Implémentation de la base de données
 - [x] Ajouter la base de données déja existante
 
@@ -38,7 +59,7 @@
 - [x] Ajouter fonction modification (ou ajouts) séances habituelles dans fiche client
 - [ ] ajout bouton pour afficher tout l'historique d'un client dans la fiche client
 - [x] Gerer le bouton si il y a déjà une habitude ou non pour le bouton dans la fiche client
-- [ ] ajout nombre de séances restantes dans après check in
+- [x] ajout nombre de séances restantes dans après check in (borne : page borne_succes.html ; check-in manuel /presence : pop-up de confirmation)
 - [ ] ajout de suppression client
 - [x] implémentation des cookis clients 
 

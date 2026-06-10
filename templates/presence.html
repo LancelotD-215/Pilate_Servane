@@ -34,4 +34,40 @@
         </div>
     </div>
 </div>
+
+{% if success %}
+<!-- Modal de confirmation du check-in manuel -->
+<div class="modal fade" id="modalPresenceSucces" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-success">
+
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">Présence validée !</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body text-center py-4">
+        <p class="fs-5 mb-3">Séance validée pour <strong>{{ success.prenom }} {{ success.nom }}</strong>.</p>
+        <div class="alert alert-info d-inline-block mb-0">
+            Il lui reste <strong>{{ success.solde }}</strong>
+            séance{{ 's' if success.solde > 1 or success.solde < -1 else '' }}.
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Suivant</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+    // Ouverture automatique de la pop-up de confirmation après un check-in
+    document.addEventListener("DOMContentLoaded", function() {
+        var modalSucces = new bootstrap.Modal(document.getElementById('modalPresenceSucces'));
+        modalSucces.show();
+    });
+</script>
+{% endif %}
 {% endblock %}

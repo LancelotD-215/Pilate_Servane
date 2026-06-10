@@ -184,12 +184,19 @@ def presence():
             # ajout dans historique seances
             connection.execute('INSERT INTO historique_seances (client_id, action, nombre, date_heure) VALUES (?, ?, ?, ?)', (client_id, "CHECK-IN", -1, current_time))
 
+            # calcul du solde restant après le check-in
+            nouveau_solde = client['seances_restantes'] - 1
+
             # commit des changements
-            connection.commit() 
+            connection.commit()
             connection.close()
 
-            # renvoie l'utilisateur vers l'accueil
-            return redirect(url_for('index'))
+            # ré-affichage de la page avec la pop-up de confirmation
+            return render_template('presence.html', success={
+                'prenom': prenom,
+                'nom': nom,
+                'solde': nouveau_solde
+            })
         
         else:
             # client non trouvé
