@@ -1,7 +1,6 @@
 import sqlite3
 
 # Fixe 1 : Correction des accents corrompus et mise en forme de la casse
-
 #def fix_corruption_and_casing(s):
 #    if s is None or s == "":
 #        return s
@@ -126,58 +125,129 @@ import sqlite3
 
 
 # Fixe 3 : 
-def clean_and_fix_db():
-    db_path = 'database_clients.db'  # Assure-toi que c'est le bon nom de fichier sur le serveur
+#def clean_and_fix_db():
+#    db_path = 'database_clients.db'  # Assure-toi que c'est le bon nom de fichier sur le serveur
+#    
+#    try:
+#        conn = sqlite3.connect(db_path)
+#        cursor = conn.cursor()
+#        print(f"🔍 Connexion établie à la base de données : {db_path}")
+#        print("⚡ Démarrage du nettoyage chirurgical...")
+#
+#        # --- 1. SUPPRESSION DE L'INTRUS ---
+#        # On utilise UPPER() pour éviter les pièges de casse
+#        cursor.execute("DELETE FROM clients WHERE UPPER(nom) = 'ZSWTFOKVOSL' OR UPPER(prenom) = 'MTVVNKLTHU'")
+#        if cursor.rowcount > 0:
+#            print(f"❌ Intrus 'Mtvvnklthu Zswtfokvsl' supprimé avec succès ({cursor.rowcount} ligne(s) impactée(s)).")
+#        else:
+#            print("⚠️ L'intrus 'Mtvvnklthu Zswtfokvsl' n'a pas été trouvé (peut-être déjà supprimé).")
+#
+#        # --- 2. SUPPRESSION DE CONSTANCE PAQUET ---
+#        cursor.execute("SELECT id FROM clients WHERE UPPER(prenom) = 'CONSTANCE' AND UPPER(nom) = 'PAQUET'")
+#        client_paquet = cursor.fetchone()
+#        
+#        if client_paquet:
+#            client_id = client_paquet[0]
+#            # On nettoie proprement ses habitudes et son historique avant de la supprimer (intégrité de la BDD)
+#            cursor.execute("DELETE FROM habitudes WHERE client_id = ?", (client_id,))
+#            cursor.execute("DELETE FROM historique_seances WHERE client_id = ?", (client_id,))
+#            cursor.execute("DELETE FROM clients WHERE id = ?", (client_id,))
+#            print("❌ Fiche de 'Constance Paquet' ainsi que ses habitudes et son historique supprimés.")
+#        else:
+#            print("⚠️ 'Constance Paquet' introuvable dans la table des clients.")
+#
+#        # --- 3. CORRECTION ALEXANDRE -> ALEXANDRA THOMAS ---
+#        cursor.execute("""
+#            UPDATE clients 
+#            SET prenom = 'Alexandra' 
+#            WHERE UPPER(prenom) = 'ALEXANDRE' AND UPPER(nom) = 'THOMAS'
+#        """)
+#        if cursor.rowcount > 0:
+#            print("✏️ Prénom corrigé avec succès : 'Alexandre Thomas' est devenu 'Alexandra Thomas'.")
+#        else:
+#            print("⚠️ Aucun client trouvé au nom de 'Alexandre Thomas' pour la correction.")
+#
+#        # Validation définitive des changements
+#        conn.commit()
+#        print("\n🎉 Nettoyage et corrections appliqués avec succès sur le serveur !")
+#
+#    except Exception as e:
+#        print(f"❌ Une erreur est survenue, modifications annulées : {e}")
+#        conn.rollback()
+#    finally:
+#        conn.close()
+#        print("🔌 Connexion à la base de données fermée.")
+#
+#if __name__ == '__main__':
+#    clean_and_fix_db()
+
+
+#Fixe 3 :
+def apply_batch_corrections():
+    db_path = 'database_clients.db'  # Base de production
     
     try:
         conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        print(f"🔍 Connexion établie à la base de données : {db_path}")
-        print("⚡ Démarrage du nettoyage chirurgical...")
+        print(f"🔍 Connexion à la base de données : {db_path}")
+        print("⚡ Application des corrections d'identités...")
 
-        # --- 1. SUPPRESSION DE L'INTRUS ---
-        # On utilise UPPER() pour éviter les pièges de casse
-        cursor.execute("DELETE FROM clients WHERE UPPER(nom) = 'ZSWTFOKVOSL' OR UPPER(prenom) = 'MTVVNKLTHU'")
-        if cursor.rowcount > 0:
-            print(f"❌ Intrus 'Mtvvnklthu Zswtfokvsl' supprimé avec succès ({cursor.rowcount} ligne(s) impactée(s)).")
-        else:
-            print("⚠️ L'intrus 'Mtvvnklthu Zswtfokvsl' n'a pas été trouvé (peut-être déjà supprimé).")
+        # Liste des corrections d'identité précises
+        # Format : (Ancien Prénom, Ancien Nom, Nouveau Prénom, Nouveau Nom)
+        corrections = [
+            # 1. Corrections des noms de famille
+            ('Stephanie', 'Delaplace', 'Stephanie', 'Delplace'),
+            ('Marc', 'Pannien', 'Marc', 'Pannien'),
+            ('Marc', 'Panieu', 'Marc', 'Pannien'), # Double sécurité selon tes messages
+            
+            # 2. Remplacements et ajustements demandés aujourd'hui
+            ('Christophe', 'Robbe', 'Christopher', 'Robbe'),
+            ('Valerie', 'Crombet', 'Valerie', 'Crombé'),
+            ('Marie', 'Verhaegen', 'Marie', 'Verhaeghe'),
+            ('Celine', 'Martin', 'Cécile', 'Martin'),
+            ('Laurence', 'Deconninck', 'Laurence', 'Dekoninck'),
+            ('Jean Francois', 'Charvet', 'Jean-François', 'Charvet'),
+            ('Edith', 'Meriaux', 'Edith', 'Meriau'),
+            ('Babette', 'Van Ost', 'Babette', 'Van Oost'),
+            
+            # Gestion du cas Ducatez (Freund-Ducatez / Freins-Ducatez)
+            # Dans le doute, j'applique Freund-Ducatez qui est ta demande principale
+            # Si le prénom est connu (ex: Servane, Nathalie...), on cible. Sinon, on cherche sur le NOM.
+        ]
 
-        # --- 2. SUPPRESSION DE CONSTANCE PAQUET ---
-        cursor.execute("SELECT id FROM clients WHERE UPPER(prenom) = 'CONSTANCE' AND UPPER(nom) = 'PAQUET'")
-        client_paquet = cursor.fetchone()
-        
-        if client_paquet:
-            client_id = client_paquet[0]
-            # On nettoie proprement ses habitudes et son historique avant de la supprimer (intégrité de la BDD)
-            cursor.execute("DELETE FROM habitudes WHERE client_id = ?", (client_id,))
-            cursor.execute("DELETE FROM historique_seances WHERE client_id = ?", (client_id,))
-            cursor.execute("DELETE FROM clients WHERE id = ?", (client_id,))
-            print("❌ Fiche de 'Constance Paquet' ainsi que ses habitudes et son historique supprimés.")
-        else:
-            print("⚠️ 'Constance Paquet' introuvable dans la table des clients.")
+        total_updates = 0
 
-        # --- 3. CORRECTION ALEXANDRE -> ALEXANDRA THOMAS ---
-        cursor.execute("""
+        # Application des couples Prénom/Nom stricts
+        for old_p, old_n, new_p, new_n in corrections:
+            cursor = conn.execute("""
+                UPDATE clients 
+                SET prenom = ?, nom = ? 
+                WHERE UPPER(prenom) = UPPER(?) AND UPPER(nom) = UPPER(?)
+            """, (new_p, new_n, old_p, old_n))
+            
+            if cursor.rowcount > 0:
+                print(f"✅ Mis à jour : {old_p} {old_n} -> {new_p} {new_n}")
+                total_updates += cursor.rowcount
+
+        # Cas particulier pour "Ducatez" -> "Freund-Ducatez" (Recherche par nom uniquement car prénom non spécifié)
+        cursor_ducatez = conn.execute("""
             UPDATE clients 
-            SET prenom = 'Alexandra' 
-            WHERE UPPER(prenom) = 'ALEXANDRE' AND UPPER(nom) = 'THOMAS'
+            SET nom = 'Freund-Ducatez' 
+            WHERE UPPER(nom) = 'DUCATEZ'
         """)
-        if cursor.rowcount > 0:
-            print("✏️ Prénom corrigé avec succès : 'Alexandre Thomas' est devenu 'Alexandra Thomas'.")
-        else:
-            print("⚠️ Aucun client trouvé au nom de 'Alexandre Thomas' pour la correction.")
+        if cursor_ducatez.rowcount > 0:
+            print(f"✅ Mis à jour : Famille DUCATEZ -> Freund-Ducatez ({cursor_ducatez.rowcount} ligne(s) modifiée(s))")
+            total_updates += cursor_ducatez.rowcount
 
-        # Validation définitive des changements
+        # Validation des changements
         conn.commit()
-        print("\n🎉 Nettoyage et corrections appliqués avec succès sur le serveur !")
+        print(f"\n🎉 Opération terminée. {total_updates} fiches clients ont été corrigées avec succès.")
 
     except Exception as e:
-        print(f"❌ Une erreur est survenue, modifications annulées : {e}")
+        print(f"❌ Une erreur est survenue, rollback appliqué : {e}")
         conn.rollback()
     finally:
         conn.close()
-        print("🔌 Connexion à la base de données fermée.")
+        print("🔌 Connexion fermée.")
 
 if __name__ == '__main__':
-    clean_and_fix_db()
+    apply_batch_corrections()
