@@ -1,26 +1,48 @@
-# Ignorer les exécutables Windows
-*.exe
-*.dll
+# ─────────────────────────────────────────────
+#  .gitignore — Application Flask "Gestion Pilate"
+# ─────────────────────────────────────────────
 
-# Ignorer les fichiers de compilation intermédiaires
-*.o
-*.obj
-
-# Ignorer les dossiers de build (si tu en crées)
-bin/
-build/
-out/
-
-# Ignorer les fichiers systèmes VS Code (optionnel, selon tes goûts)
-.vscode/
-*.pyc
-
-ngrok.exe
-
-.venv/
-
-# Ignorer les fichiers de base de données pour ne pas faire de conflit ou écraser les données de production
-*.db
-
-# Ignorer les fichiers temporaire
+# --- Python : bytecode & cache ---
 __pycache__/
+*.py[cod]
+*$py.class
+
+# --- Environnements virtuels ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Bases de données SQLite (données de production / locales) ---
+# /!\ Ne jamais versionner les .db : ils contiennent les données clients
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Variables d'environnement & secrets ---
+.env
+.env.*
+*.key
+
+# --- Données personnelles (RGPD) ---
+# Exports et listes clients : ne pas versionner
+data/*.csv
+
+# --- Outils de développement local ---
+ngrok.exe
+*.log
+
+# --- IDE / Éditeurs ---
+.vscode/
+.idea/
+*.swp
+
+# --- Systèmes d'exploitation ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Packaging / build (si un jour nécessaire) ---
+build/
+dist/
+*.egg-info/
