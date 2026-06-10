@@ -117,6 +117,12 @@
         <a href="/" class="btn btn-outline-secondary">← Retour à l'accueil</a>
     </div>
 
+    <div class="text-center mt-5 pt-4 border-top">
+        <button type="button" class="btn btn-danger" id="deleteClientBtn">
+            <i class="fas fa-trash"></i> Supprimer le client
+        </button>
+    </div>
+
 </div>
 
 <!-- Modal pour ajout de séances -->
@@ -241,6 +247,47 @@
   </div>
 </div>
 
+<!-- Modal de confirmation de suppression du client -->
+<div class="modal fade" id="modalSupprimerClient" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <form action="/supprimer_client" method="POST">
+
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title"> Supprimer le client</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" name="client_id" value="{{ client['id'] }}">
+
+            <p class="fs-5 mb-2">Voulez-vous vraiment supprimer 
+                <strong>{{ client['prenom'] }} {{ client['nom'] }}</strong> ?</p>
+
+            <p class="text-danger fw-bold">
+                Cette action est irréversible. Toutes ses données seront définitivement supprimées.
+            </p>
+
+            <div class="form-check mt-4">
+                <input class="form-check-input" type="checkbox" id="confirmDeleteCheck">
+                <label class="form-check-label" for="confirmDeleteCheck">
+                    J'ai bien pris connaissance que cette action est irréversible.
+                </label>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-danger" id="confirmDeleteBtn" disabled>
+              Oui, supprimer définitivement
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
     // Script pour gérer le bouton d'ajout de séances dans la fiche client
     document.addEventListener("DOMContentLoaded", function() {
@@ -271,6 +318,20 @@
         $(document).on('click', '#editClientBtn', function () {
             var myModal = new bootstrap.Modal(document.getElementById('modalModifClient'));
             myModal.show();
+        });
+
+        // Gestion du clic sur le bouton de suppression du client
+        $(document).on('click', '#deleteClientBtn', function () {
+            // On réinitialise la case et on désactive le bouton à chaque ouverture
+            $('#confirmDeleteCheck').prop('checked', false);
+            $('#confirmDeleteBtn').prop('disabled', true);
+            var myModal = new bootstrap.Modal(document.getElementById('modalSupprimerClient'));
+            myModal.show();
+        });
+
+        // Le bouton de confirmation n'est actif que si la case est cochée
+        $(document).on('change', '#confirmDeleteCheck', function () {
+            $('#confirmDeleteBtn').prop('disabled', !this.checked);
         });
     });
 </script>

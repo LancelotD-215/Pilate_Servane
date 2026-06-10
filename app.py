@@ -746,6 +746,38 @@ def modif_client():
 
 
 
+@app.route('/supprimer_client', methods=['POST'])
+def supprimer_client():
+    """
+    Fonction exécutée lors de l'accès à la page '/supprimer_client'.
+    Supprime définitivement un client ainsi que ses données liées
+    (habitudes et historique des séances).
+    Args:
+        None
+    Returns:
+        str: redirection vers la page de gestion des clients.
+    """
+    # connexion à la base de données
+    connection = get_db_connection()
+
+    # récupération de l'ID du client à supprimer
+    client_id = int(request.form['client_id'])
+
+    # suppression des données liées puis du client lui-même
+    # (SQLite n'applique pas le ON DELETE CASCADE par défaut, on le fait manuellement)
+    connection.execute('DELETE FROM habitudes WHERE client_id = ?', (client_id,))
+    connection.execute('DELETE FROM historique_seances WHERE client_id = ?', (client_id,))
+    connection.execute('DELETE FROM clients WHERE id = ?', (client_id,))
+
+    # commit des changements
+    connection.commit()
+    connection.close()
+
+    # renvoie de l'utilisateur vers la liste des clients
+    return redirect(url_for('gestion_clients'))
+
+
+
 
 @app.route('/borne', methods=['GET', 'POST'])
 def borne():
