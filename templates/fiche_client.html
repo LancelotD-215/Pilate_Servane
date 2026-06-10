@@ -7,7 +7,12 @@
         <div class="card-body">
             <div class="row align-items-center">
                 <div class="col-md-7">
-                    <h1 class="display-5 fw-bold text-pink-logo">{{ client['prenom'] }} {{ client['nom'] }}</h1>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <h1 class="display-5 fw-bold text-pink-logo mb-0">{{ client['prenom'] }} {{ client['nom'] }}</h1>
+                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill btn-modif-client" id="editClientBtn" title="Modifier les informations">
+                            <i class="fas fa-pen-to-square"></i>
+                        </button>
+                    </div>
                     <p class="text-muted mb-1"><i class="far fa-calendar"></i> Inscrit(e) le : {{ client['date_inscription'] }}</p>
                     <p class="text-muted mb-1"><i class="fas fa-at"></i> Email : {{ client['email'] or 'Non renseigné' }}</p>
                     <p class="text-muted mb-0"><i class="fas fa-phone"></i> Tél : {{ client['telephone'] or 'Non renseigné' }}</p>
@@ -191,6 +196,51 @@
   </div>
 </div>
 
+<!-- Modal pour la modification des informations du client -->
+<div class="modal fade" id="modalModifClient" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form action="/modif_client" method="POST">
+
+        <div class="modal-header bg-light">
+          <h5 class="modal-title">Modifier les informations</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+            <input type="hidden" name="client_id" value="{{ client['id'] }}">
+
+            <div class="mb-3">
+                <label class="form-label">Prénom</label>
+                <input type="text" class="form-control" name="prenom" value="{{ client['prenom'] }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <input type="text" class="form-control" name="nom" value="{{ client['nom'] }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" value="{{ client['email'] or '' }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Téléphone</label>
+                <input type="tel" class="form-control" name="telephone" value="{{ client['telephone'] or '' }}">
+            </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
     // Script pour gérer le bouton d'ajout de séances dans la fiche client
     document.addEventListener("DOMContentLoaded", function() {
@@ -214,6 +264,12 @@
 
         $(document).on('click', '#editHabitudesBtn', function () {
             var myModal = new bootstrap.Modal(document.getElementById('modalmodif-inscriptions'));
+            myModal.show();
+        });
+
+        // Gestion du clic sur le bouton de modification des informations du client
+        $(document).on('click', '#editClientBtn', function () {
+            var myModal = new bootstrap.Modal(document.getElementById('modalModifClient'));
             myModal.show();
         });
     });

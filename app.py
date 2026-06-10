@@ -696,7 +696,54 @@ def modif_inscriptions():
         connection.close()
         
         return redirect(url_for('fiche_client', client_id=client_id))
-        
+
+
+
+@app.route('/modif_client', methods=['POST'])
+def modif_client():
+    """
+    Fonction exécutée lors de l'accès à la page '/modif_client'.
+    Met à jour les informations d'un client (prénom, nom, email, téléphone).
+    Args:
+        None
+    Returns:
+        str: redirection vers la fiche du client.
+    """
+    # connexion à la base de données
+    connection = get_db_connection()
+
+    # récupération des données du formulaire
+    client_id = int(request.form['client_id'])
+    prenom = request.form['prenom'].strip().title()
+    nom = request.form['nom'].strip().title()
+    email = request.form.get('email', '').strip() or None
+    telephone = request.form.get('telephone', '').strip() or None
+
+    # vérification qu'un AUTRE client ne porte pas déjà ce prénom/nom
+    existing_client = connection.execute(
+        'SELECT id FROM clients WHERE prenom = ? AND nom = ? AND id != ?',
+        (prenom, nom, client_id)
+    ).fetchone()
+
+    if existing_client:
+        connection.close()
+        return (f"<h1>Erreur : Le client '{prenom} {nom}' existe déjà.</h1>"
+                f"<p>Veuillez vérifier les informations et réessayer.</p>"
+                f"<a href='/client/{client_id}'>Retour à la fiche</a>")
+
+    # mise à jour des informations du client
+    connection.execute(
+        'UPDATE clients SET prenom = ?, nom = ?, email = ?, telephone = ? WHERE id = ?',
+        (prenom, nom, email, telephone, client_id)
+    )
+
+    # commit des changements
+    connection.commit()
+    connection.close()
+
+    # renvoie de l'utilisateur vers la fiche du client
+    return redirect(url_for('fiche_client', client_id=client_id))
+
 
 
 
